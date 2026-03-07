@@ -51,11 +51,9 @@ export default function PlayersDashboard() {
 
   const handleDelete = () => {
     if (selectedPlayer) {
-      if (window.confirm("Are you sure you want to delete this player?")) {
-        playerStore.deletePlayer(selectedPlayer.id);
-        loadPlayers();
-        handleClose();
-      }
+      playerStore.deletePlayer(selectedPlayer.id);
+      loadPlayers();
+      handleClose();
     }
   };
 
@@ -180,7 +178,7 @@ export default function PlayersDashboard() {
             <div className="pt-8 flex justify-end gap-3 pb-2 mt-auto">
               <button
                 onClick={handleDelete}
-                className="px-8 py-2.5 bg-[#f4f4f4] text-[#555] text-[13px] font-medium rounded-sm hover:bg-[#eaeaea] transition-colors hidden md:block"
+                className="px-8 py-2.5 bg-[#f4f4f4] text-[#555] text-[13px] font-medium rounded-sm hover:bg-[#eaeaea] transition-colors"
               >
                 Delete
               </button>

@@ -1,7 +1,26 @@
+import { useEffect, useState } from 'react';
 import { Bars3Icon, MagnifyingGlassIcon, BellIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { UserIcon } from '@heroicons/react/24/solid';
 
 export default function Header() {
+  const [userName, setUserName] = useState('Anil A Johnson');
+
+  useEffect(() => {
+    try {
+      const userDataStr = localStorage.getItem('user_data');
+      if (userDataStr) {
+        const data = JSON.parse(userDataStr);
+        if (data.firstName && data.lastName) {
+          setUserName(`${data.firstName} ${data.lastName}`);
+        } else if (data.firstName || data.lastName) {
+          setUserName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing user data for header:', e);
+    }
+  }, []);
+
   return (
     <header className="bg-[#f9f9f9] border-b border-[#f0f0f0] px-6 py-3 shrink-0">
       <div className="flex justify-between items-center w-full">
@@ -37,7 +56,7 @@ export default function Header() {
             </div>
 
             <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-[#444] leading-tight group-hover:text-[#333]">Anil A Johnson</span>
+              <span className="text-[13px] font-bold text-[#444] leading-tight group-hover:text-[#333]">{userName}</span>
               <span className="text-[11px] text-[#888] font-medium leading-tight mt-[2px]">Secretary</span>
             </div>
           </div>

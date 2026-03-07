@@ -38,12 +38,6 @@ export const playerStore = {
 
             const parsed = JSON.parse(data);
 
-            // Re-seed data if legacy 'Player Name' placeholder exists
-            if (parsed.length > 0 && parsed[0].name === 'Player Name') {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PLAYERS));
-                return MOCK_PLAYERS;
-            }
-
             return parsed;
         } catch (e) {
             console.error('Error loading players:', e);
@@ -68,28 +62,28 @@ export const playerStore = {
         }
     },
 
-    updatePlayer: (id: number, updates: Partial<Player>) => {
+    updatePlayer: (id: number | string, updates: Partial<Player>) => {
         try {
             const existing = playerStore.getPlayers();
-            const updated = existing.map(p => p.id === id ? { ...p, ...updates } : p);
+            const updated = existing.map(p => String(p.id) === String(id) ? { ...p, ...updates } : p);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         } catch (e) {
             console.error('Error updating player:', e);
         }
     },
 
-    deletePlayer: (id: number) => {
+    deletePlayer: (id: number | string) => {
         try {
             const existing = playerStore.getPlayers();
-            const updated = existing.filter(p => p.id !== id);
+            const updated = existing.filter(p => String(p.id) !== String(id));
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         } catch (e) {
             console.error('Error deleting player:', e);
         }
     },
 
-    getPlayerById: (id: number): Player | undefined => {
+    getPlayerById: (id: number | string): Player | undefined => {
         const players = playerStore.getPlayers();
-        return players.find(p => p.id === id);
+        return players.find(p => String(p.id) === String(id));
     }
 };
