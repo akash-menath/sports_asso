@@ -1121,7 +1121,7 @@ export default function ChampionshipDetails() {
             onSubmit={(e) => {
               e.preventDefault();
               const formData = new FormData(e.currentTarget);
-              handleAddBestPlayer(formData.get('name') as string, formData.get('match') as string, formData.get('pos') as string);
+              handleAddBestPlayer(formData.get('name') as string, formData.get('match') as string);
             }}
             className="space-y-6"
           >

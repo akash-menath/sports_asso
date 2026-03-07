@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Card, Input } from '../../components/ui';
 import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 export default function StateAssociationDetails() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const [association, setAssociation] = useState({
     name: 'Kerala Softball Association',
     secretary: 'Anil A Johnson',
@@ -47,18 +47,18 @@ export default function StateAssociationDetails() {
   return (
     <div>
       <div className="mb-6">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => navigate('/state-association')}
           className="mb-4"
         >
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back to State Associations
         </Button>
-        
+
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">State Association Details</h1>
-          <Button 
+          <Button
             onClick={() => setIsEditing(!isEditing)}
             variant="outline"
           >
@@ -74,7 +74,7 @@ export default function StateAssociationDetails() {
           <Card>
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Association Information</h3>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
@@ -84,7 +84,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="secretary"
                     label="Secretary Name"
@@ -92,7 +92,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="phone"
                     label="Phone Number"
@@ -100,7 +100,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="email"
                     label="Email Address"
@@ -108,7 +108,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="website"
                     label="Website"
@@ -116,7 +116,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="address"
                     label="Address"
@@ -124,7 +124,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="city"
                     label="City"
@@ -132,7 +132,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="state"
                     label="State"
@@ -140,7 +140,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="country"
                     label="Country"
@@ -148,7 +148,7 @@ export default function StateAssociationDetails() {
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
-                  
+
                   <Input
                     name="pinCode"
                     label="Pin Code"
@@ -157,7 +157,7 @@ export default function StateAssociationDetails() {
                     disabled={!isEditing}
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                   <textarea
@@ -170,7 +170,7 @@ export default function StateAssociationDetails() {
                   />
                 </div>
               </div>
-              
+
               {isEditing && (
                 <div className="flex justify-end space-x-3 mt-6">
                   <Button variant="outline" onClick={handleCancel}>
@@ -188,7 +188,7 @@ export default function StateAssociationDetails() {
           <Card>
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Social Media</h3>
-              
+
               <div className="space-y-4">
                 <Input
                   name="facebook"
@@ -197,7 +197,7 @@ export default function StateAssociationDetails() {
                   onChange={handleChange}
                   disabled={!isEditing}
                 />
-                
+
                 <Input
                   name="instagram"
                   label="Instagram"
@@ -205,7 +205,7 @@ export default function StateAssociationDetails() {
                   onChange={handleChange}
                   disabled={!isEditing}
                 />
-                
+
                 <Input
                   name="twitter"
                   label="Twitter"
@@ -241,18 +241,18 @@ export default function StateAssociationDetails() {
           <Card>
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Statistics</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500">District Associations</span>
                   <span className="text-sm font-medium text-gray-900">{association.totalDistricts}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500">Total Players</span>
                   <span className="text-sm font-medium text-gray-900">{association.totalPlayers}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500">Total Clubs</span>
                   <span className="text-sm font-medium text-gray-900">{association.totalClubs}</span>
