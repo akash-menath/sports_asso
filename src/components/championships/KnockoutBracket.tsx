@@ -41,7 +41,7 @@ export default function KnockoutBracket({ teams, teamCount }: KnockoutBracketPro
   const rightRounds = buildSideRounds(rightSlots);  // same
 
   // ── round labels ─────────────────────────────────────────────
-  const allLabels = ['Pre-QF', 'Quarter Final', 'Semi Final'];
+  const allLabels = ['', '', '']; // ['Pre-QF', 'Quarter Final', 'Semi Final'] - commented out
   const startIdx = allLabels.length - leftRounds.length;
   const roundLabels = allLabels.slice(startIdx);
 
@@ -170,7 +170,7 @@ export default function KnockoutBracket({ teams, teamCount }: KnockoutBracketPro
           <RoundLabel key={`lh-${ri}`} label={roundLabels[ri]} width={COL_W} />
         ))}
         {/* Center label */}
-        <RoundLabel label="Final" width={110} />
+        {/* <RoundLabel label="Final" width={110} /> */}
         {/* Right side labels (reversed) */}
         {[...leftRounds].reverse().map((_, ri) => (
           <RoundLabel key={`rh-${ri}`} label={roundLabels[leftRounds.length - 1 - ri]} width={COL_W} />
