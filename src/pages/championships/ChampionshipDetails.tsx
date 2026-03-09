@@ -6,9 +6,7 @@ import { championshipStore, type Championship } from '../../lib/championshipStor
 import { 
   FixtureConfiguration, 
   KnockoutBracket, 
-  LeagueStage, 
-  MatchOrder, 
-  AttendanceLogs 
+  LeagueStage
 } from '../../components/championships';
 
 const LIVE_TABS = [
