@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Bars3Icon, MagnifyingGlassIcon, BellIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { UserIcon } from '@heroicons/react/24/solid';
 
-export default function Header() {
+export default function Header({ isMobileMenuOpen, setIsMobileMenuOpen }: { isMobileMenuOpen?: boolean; setIsMobileMenuOpen?: (state: boolean) => void }) {
   const [userName, setUserName] = useState('Anil A Johnson');
 
   useEffect(() => {
@@ -22,46 +22,60 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="bg-[#f9f9f9] border-b border-[#f0f0f0] px-6 py-3 shrink-0">
-      <div className="flex justify-between items-center w-full">
-        {/* Left side: Menu and Logo */}
-        <div className="flex items-center gap-4">
-          <button className="text-[#555] hover:text-[#333] focus:outline-none rounded-sm p-1 transition-colors">
-            <span className="sr-only">Open menu</span>
-            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <span className="text-[18px] font-bold text-[#555] tracking-tight">
-            KSA Logo
-          </span>
-        </div>
+    <>
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+        <div className="text-base font-semibold text-gray-900">KSA</div>
+        <button
+          onClick={() => setIsMobileMenuOpen?.(!isMobileMenuOpen)}
+          className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md transition-colors"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <span className="sr-only">Open main menu</span>
+          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+        </button>
+      </div>
 
-        {/* Right side items */}
-        <div className="flex items-center gap-5">
-          <button className="text-[#666] hover:text-[#333] transition-colors focus:outline-none">
-            <MagnifyingGlassIcon className="h-5 w-5 stroke-2" />
-          </button>
+      {/* Desktop header */}
+      <header className="hidden lg:block bg-gray-50 border-b border-gray-200 px-6 py-3 shrink-0">
+        <div className="flex justify-between items-center w-full">
+          {/* Left side: Logo */}
+          <div className="flex items-center gap-4">
+            <span className="text-xl font-bold text-gray-900 tracking-tight">
+              KSA Logo
+            </span>
+          </div>
 
-          <button className="text-[#666] hover:text-[#333] transition-colors relative focus:outline-none">
-            <BellIcon className="h-5 w-5 stroke-2" />
-          </button>
+          {/* Right side items */}
+          <div className="flex items-center gap-5">
+            <button className="text-gray-500 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md">
+              <MagnifyingGlassIcon className="h-5 w-5 stroke-2" />
+            </button>
 
-          <button className="text-[#666] hover:text-[#333] transition-colors focus:outline-none">
-            <PlusIcon className="h-6 w-6 stroke-2" />
-          </button>
+            <button className="text-gray-500 hover:text-gray-700 transition-colors relative focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md">
+              <BellIcon className="h-5 w-5 stroke-2" />
+              {/* Notification badge */}
+              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            </button>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3 ml-2 cursor-pointer group">
-            <div className="h-9 w-9 rounded-full bg-[#f3eefe] flex items-center justify-center transition-colors group-hover:bg-[#ebe2fe]">
-              <UserIcon className="h-5 w-5 text-[#8b5cf6]" />
-            </div>
+            <button className="text-gray-500 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md">
+              <PlusIcon className="h-6 w-6 stroke-2" />
+            </button>
 
-            <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-[#444] leading-tight group-hover:text-[#333]">{userName}</span>
-              <span className="text-[11px] text-[#888] font-medium leading-tight mt-[2px]">Secretary</span>
+            {/* User Profile */}
+            <div className="flex items-center gap-3 ml-2 cursor-pointer group">
+              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center transition-colors group-hover:bg-blue-200">
+                <UserIcon className="h-6 w-6 text-blue-600" />
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-900 leading-tight group-hover:text-gray-700">{userName}</span>
+                <span className="text-xs text-gray-500 font-medium leading-tight mt-0.5">Secretary</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

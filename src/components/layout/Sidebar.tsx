@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SidebarItem {
   id: string;
@@ -21,8 +20,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'profile', name: 'Profile', path: '/dashboard/profile' },
 ];
 
-export default function Sidebar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isMobileMenuOpen?: boolean; setIsMobileMenuOpen?: (state: boolean) => void }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,6 +30,12 @@ export default function Sidebar() {
     navigate('/login');
   };
 
+  const handleItemClick = () => {
+    if (setIsMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   const renderSidebarItem = (item: SidebarItem) => {
     const isActive = location.pathname.startsWith(item.path) && (item.path !== '/dashboard' || location.pathname === '/dashboard');
 
@@ -39,8 +43,12 @@ export default function Sidebar() {
       <div key={item.id} className="mb-4">
         <Link
           to={item.path}
-          className={`block text-[13px] transition-colors ${isActive ? 'text-[#333] font-medium' : 'text-[#888] hover:text-[#555]'
-            }`}
+          onClick={handleItemClick}
+          className={`block text-sm transition-colors duration-200 ${
+            isActive 
+              ? 'text-gray-900 font-semibold bg-gray-100 rounded-lg px-3 py-2' 
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg px-3 py-2'
+          }`}
         >
           {item.name}
         </Link>
@@ -49,7 +57,12 @@ export default function Sidebar() {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white px-6 py-10 w-52 border-r border-[#f0f0f0]">
+    <div className="flex flex-col h-full bg-white px-4 py-6 w-64 border-r border-gray-200">
+      {/* Logo/Brand for mobile */}
+      <div className="lg:hidden mb-8">
+        <div className="text-xl font-bold text-gray-900">KSA</div>
+      </div>
+      
       {/* Navigation */}
       <nav className="flex-1 mt-4">
         {sidebarItems.map((item) => renderSidebarItem(item))}
@@ -59,7 +72,7 @@ export default function Sidebar() {
       <div className="mt-auto pt-8">
         <button
           onClick={handleLogout}
-          className="text-[13px] text-[#888] hover:text-[#333] transition-colors text-left w-full"
+          className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200 text-left px-3 py-2 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
         >
           Logout
         </button>
@@ -69,30 +82,38 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-[#f0f0f0] px-4 py-3 flex justify-between items-center">
-        <div className="text-[16px] font-bold text-[#333]">KSA</div>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-[#555] focus:outline-none"
-        >
-          {isMobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
-        </button>
-      </div>
-
-      {/* Sidebar for desktop */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
-        {sidebarContent}
-      </div>
-
       {/* Mobile sidebar overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white pt-16">
-            {sidebarContent}
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen?.(false)}
+            aria-hidden="true"
+          />
+          {/* Sidebar content */}
+          <div className="relative flex flex-col w-80 max-w-[80vw] bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className="text-lg font-semibold text-gray-900">Menu</div>
+              <button
+                onClick={() => setIsMobileMenuOpen?.(false)}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md"
+                aria-label="Close menu"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {sidebarContent}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex lg:flex-shrink-0">
+        {sidebarContent}
+      </div>
     </>
   );
 }

@@ -162,90 +162,108 @@ export default function KnockoutBracket({ teams, teamCount }: KnockoutBracketPro
   const COL_W = 100 + CONN_W + CONN_W + BETWEEN_W; // total width per round column incl connectors
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-auto">
       {/* ── ROUND HEADERS ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div className="flex flex-col lg:flex-row items-start lg:items-end justify-center gap-2 lg:gap-0">
         {/* Left side labels */}
         {leftRounds.map((_, ri) => (
-          <RoundLabel key={`lh-${ri}`} label={roundLabels[ri]} width={COL_W} />
+          <div key={`lh-${ri}`} className="w-full lg:w-auto flex justify-center lg:justify-start">
+            <RoundLabel label={roundLabels[ri]} width={COL_W} />
+          </div>
         ))}
         {/* Center label */}
         {/* <RoundLabel label="Final" width={110} /> */}
         {/* Right side labels (reversed) */}
         {[...leftRounds].reverse().map((_, ri) => (
-          <RoundLabel key={`rh-${ri}`} label={roundLabels[leftRounds.length - 1 - ri]} width={COL_W} />
+          <div key={`rh-${ri}`} className="w-full lg:w-auto flex justify-center lg:justify-end">
+            <RoundLabel label={roundLabels[leftRounds.length - 1 - ri]} width={COL_W} />
+          </div>
         ))}
       </div>
 
       {/* ── BRACKET ── */}
       <div className="overflow-x-auto pb-2">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 'max-content' }}>
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-center min-w-max lg:min-w-0">
 
           {/* LEFT SIDE: R1 → … → SF (left to right) */}
-          {leftRounds.map((matches, ri) => (
-            <div key={`l-${ri}`} style={{ display: 'flex', alignItems: 'center' }}>
-              <RoundCol matches={matches} side="left" />
-              <ConnectorCol numLines={leftRounds[ri + 1]?.length ?? 1} side="left" />
-            </div>
-          ))}
+          <div className="flex flex-col lg:flex-row items-center w-full lg:w-auto">
+            {leftRounds.map((matches, ri) => (
+              <div key={`l-${ri}`} className="flex items-center w-full lg:w-auto">
+                <div className="w-full lg:w-auto">
+                  <RoundCol matches={matches} side="left" />
+                </div>
+                <div className="hidden lg:block w-4">
+                  <ConnectorCol numLines={leftRounds[ri + 1]?.length ?? 1} side="left" />
+                </div>
+              </div>
+            ))}
+          </div>
 
           {/* CENTER FINAL */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: BRACKET_H, width: 90, flexShrink: 0 }}>
-            <svg style={{ width: 44, height: 44, color: '#f1c40f', marginBottom: 6 }} viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+          <div className="flex flex-col items-center justify-center h-auto lg:h-full w-full lg:w-auto py-8 lg:py-0">
+            <svg className="w-11 h-11 text-yellow-500 mb-1.5 lg:mb-1.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
             </svg>
-            <div style={{ background: '#333', color: '#fff', fontSize: 11, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', padding: '6px 14px', borderRadius: 6 }}>
+            <div className="bg-gray-800 text-white text-xs lg:text-xs font-bold tracking-wider p-1.5 lg:p-1.5 rounded">
               Final
             </div>
-            <div style={{ fontSize: 10, color: '#aaa', fontWeight: 600, marginTop: 4 }}>🏆 Champion</div>
+            <div className="text-xs text-gray-500 font-semibold mt-1">🏆 Champion</div>
           </div>
 
           {/* RIGHT SIDE: SF → … → R1 (right side, mirrored = rightRounds reversed) */}
-          {[...rightRounds].reverse().map((matches, ri) => (
-            <div key={`r-${ri}`} style={{ display: 'flex', alignItems: 'center' }}>
-              <ConnectorCol numLines={matches.length} side="right" />
-              <RoundCol matches={matches} side="right" />
-            </div>
-          ))}
+          <div className="flex flex-col lg:flex-row items-center w-full lg:w-auto">
+            {[...rightRounds].reverse().map((matches, ri) => (
+              <div key={`r-${ri}`} className="flex items-center w-full lg:w-auto">
+                <div className="hidden lg:block w-4">
+                  <ConnectorCol numLines={matches.length} side="right" />
+                </div>
+                <div className="w-full lg:w-auto">
+                  <RoundCol matches={matches} side="right" />
+                </div>
+              </div>
+            ))}
+          </div>
 
         </div>
       </div>
 
       {/* ── QTR FINAL KNOCKOUT MATCHES ORDER ── */}
-      <div className="space-y-4 border-t border-[#f0f0f0] pt-8">
-        <h4 className="text-[13px] font-bold text-[#444]">Qtr Final knock out matches order</h4>
-        <div className="border border-[#eee] rounded-xl overflow-hidden w-fit mx-auto shadow-lg">
-          <table className="w-full text-[12px]">
-            <thead>
-              <tr className="bg-[#f9f9f9] border-b border-[#eee]">
-                <th className="text-left px-6 py-4 text-[#bbb] font-bold">Team 1</th>
-                <th className="text-center px-4 py-4 text-[#bbb] font-bold w-12">Vs</th>
-                <th className="text-left px-6 py-4 text-[#bbb] font-bold">Team 2</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#f5f5f5]">
-              <tr className="hover:bg-[#fafafa] transition-colors">
-                <td className="px-6 py-4 font-bold text-[#333]">Winner of Pool A</td>
-                <td className="text-center px-4 py-4 text-[10px] font-black text-[#ccc]">Vs</td>
-                <td className="px-6 py-4 font-bold text-[#333]">Runner of Pool C</td>
-              </tr>
-              <tr className="hover:bg-[#fafafa] transition-colors">
-                <td className="px-6 py-4 font-bold text-[#333]">Winner of Pool D</td>
-                <td className="text-center px-4 py-4 text-[10px] font-black text-[#ccc]">Vs</td>
-                <td className="px-6 py-4 font-bold text-[#333]">Runner of Pool B</td>
-              </tr>
-              <tr className="hover:bg-[#fafafa] transition-colors">
-                <td className="px-6 py-4 font-bold text-[#333]">Winner of Pool C</td>
-                <td className="text-center px-4 py-4 text-[10px] font-black text-[#ccc]">Vs</td>
-                <td className="px-6 py-4 font-bold text-[#333]">Runner of Pool A</td>
-              </tr>
-              <tr className="hover:bg-[#fafafa] transition-colors">
-                <td className="px-6 py-4 font-bold text-[#333]">Winner of Pool B</td>
-                <td className="text-center px-4 py-4 text-[10px] font-black text-[#ccc]">Vs</td>
-                <td className="px-6 py-4 font-bold text-[#333]">Runner of Pool D</td>
-              </tr>
-            </tbody>
-          </table>
+      <div className="space-y-4 border-t border-gray-100 pt-8">
+        <h4 className="text-sm font-bold text-gray-700">Qtr Final knock out matches order</h4>
+        <div className="border border-gray-200 rounded-xl overflow-hidden w-full max-w-fit mx-auto shadow-lg">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="text-left px-4 lg:px-6 py-3 lg:py-4 text-gray-400 font-bold">Team 1</th>
+                  <th className="text-center px-2 lg:px-4 py-3 lg:py-4 text-gray-400 font-bold w-8 lg:w-12">Vs</th>
+                  <th className="text-left px-4 lg:px-6 py-3 lg:py-4 text-gray-400 font-bold">Team 2</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Winner of Pool A</td>
+                  <td className="text-center px-2 lg:px-4 py-3 lg:py-4 text-xs lg:text-xs font-black text-gray-300">Vs</td>
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Runner of Pool C</td>
+                </tr>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Winner of Pool D</td>
+                  <td className="text-center px-2 lg:px-4 py-3 lg:py-4 text-xs lg:text-xs font-black text-gray-300">Vs</td>
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Runner of Pool B</td>
+                </tr>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Winner of Pool C</td>
+                  <td className="text-center px-2 lg:px-4 py-3 lg:py-4 text-xs lg:text-xs font-black text-gray-300">Vs</td>
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Runner of Pool A</td>
+                </tr>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Winner of Pool B</td>
+                  <td className="text-center px-2 lg:px-4 py-3 lg:py-4 text-xs lg:text-xs font-black text-gray-300">Vs</td>
+                  <td className="px-4 lg:px-6 py-3 lg:py-4 font-bold text-gray-700 text-sm lg:text-sm">Runner of Pool D</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
