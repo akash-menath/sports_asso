@@ -5,8 +5,7 @@ import SlideOver from '../../components/ui/SlideOver';
 import { championshipStore, type Championship } from '../../lib/championshipStore';
 import { 
   FixtureConfiguration, 
-  KnockoutBracket, 
-  LeagueStage
+  KnockoutBracket
 } from '../../components/championships';
 
 const LIVE_TABS = [
