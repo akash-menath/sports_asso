@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronUpIcon, ChevronDownIcon, PlusIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import SlideOver from '../../components/ui/SlideOver';
 import { championshipStore, type Championship } from '../../lib/championshipStore';
+import { 
+  FixtureConfiguration, 
+  KnockoutBracket, 
+  LeagueStage, 
+  MatchOrder, 
+  AttendanceLogs 
+} from '../../components/championships';
 
 const LIVE_TABS = [
   'Ground Confirmation',
@@ -24,24 +31,134 @@ const POST_TABS = [
 
 const MOCK_DATA: Record<string, Partial<Championship>> = {
   'mock-1': {
-    title: '26th Senior State Championship',
+    title: '26th Senior State Championship - Upcoming',
     groundName: 'Thodupuzha Ground',
     place: 'Thodupuzha',
     district: 'Idukki',
   },
   'mock-2': {
-    title: '26th Senior State Championship',
+    title: '26th Senior State Championship - Ongoing',
     groundName: 'Trivandrum Ground',
     place: 'Thodupuzha',
     district: 'Idukki',
   }
 };
 
+// Generate match orders based on fixture type
+const generateMatchOrders = (teams: {name: string; id: string}[], fixtureType: string) => {
+  if (!teams.length || !fixtureType) return [];
+  
+  const matches = [];
+  let matchId = 1;
+  
+  if (fixtureType === 'knock-out') {
+    // Simple knockout bracket
+    const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < shuffledTeams.length - 1; i += 2) {
+      const isCompleted = matchId <= 2; // First 2 matches are completed
+      matches.push({
+        id: matchId++,
+        team1: shuffledTeams[i]?.name || `Team ${i + 1}`,
+        team2: shuffledTeams[i + 1]?.name || `Team ${i + 2}`,
+        round: 'Quarter Final',
+        time: `10:${String(matchId * 2).padStart(2, '0')} AM`,
+        pitch: `Pitch ${Math.ceil(matchId / 2)}`,
+        status: isCompleted ? 'Completed' : 'Upcoming',
+        score: isCompleted ? '7-0' : undefined,
+        playerOfMatch: isCompleted ? 'John Doe' : undefined
+      });
+    }
+  } else if (fixtureType === 'round-robin') {
+    // Round robin - each team plays every other team
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        const isCompleted = matchId <= 3; // First 3 matches are completed
+        matches.push({
+          id: matchId++,
+          team1: teams[i]?.name || `Team ${i + 1}`,
+          team2: teams[j]?.name || `Team ${j + 1}`,
+          round: `Pool Match ${matchId}`,
+          time: `${9 + Math.floor(matchId / 3)}:${String((matchId % 3) * 20).padStart(2, '0')} AM`,
+          pitch: `Pitch ${((matchId - 1) % 4) + 1}`,
+          status: isCompleted ? 'Completed' : 'Upcoming',
+          score: isCompleted ? `${Math.floor(Math.random() * 5)}-${Math.floor(Math.random() * 3)}` : undefined,
+          playerOfMatch: isCompleted ? ['John Doe', 'Jane Smith', 'Mike Johnson'][Math.min(matchId - 1, 2)] : undefined
+        });
+      }
+    }
+  } else if (fixtureType.includes('league')) {
+    // League stages with pools
+    const teamsPerPool = Math.ceil(teams.length / 4);
+    const pools = ['A', 'B', 'C', 'D'];
+    
+    for (let p = 0; p < 4 && p * teamsPerPool < teams.length; p++) {
+      const poolTeams = teams.slice(p * teamsPerPool, (p + 1) * teamsPerPool);
+      
+      // Round robin within each pool
+      for (let i = 0; i < poolTeams.length; i++) {
+        for (let j = i + 1; j < poolTeams.length; j++) {
+          const isCompleted = matchId <= 2; // First 2 matches are completed
+          matches.push({
+            id: matchId++,
+            team1: poolTeams[i]?.name || `Team ${i + 1}`,
+            team2: poolTeams[j]?.name || `Team ${j + 1}`,
+            round: `Pool ${pools[p]}`,
+            time: `${9 + Math.floor(matchId / 3)}:${String((matchId % 3) * 20).padStart(2, '0')} AM`,
+            pitch: `Pitch ${((matchId - 1) % 4) + 1}`,
+            status: isCompleted ? 'Completed' : 'Upcoming',
+            score: isCompleted ? `${Math.floor(Math.random() * 6)}-${Math.floor(Math.random() * 2)}` : undefined,
+            playerOfMatch: isCompleted ? ['John Doe', 'Jane Smith'][Math.min(matchId - 1, 1)] : undefined
+          });
+        }
+      }
+    }
+    
+    // Add knockout matches if format includes it
+    if (fixtureType.includes('knock-out') && teams.length >= 4) {
+      // Get winners and runners from pools for more realistic matchups
+      const poolWinners = [];
+      const poolRunners = [];
+      
+      for (let p = 0; p < 4 && p * teamsPerPool < teams.length; p++) {
+        const poolTeams = teams.slice(p * teamsPerPool, (p + 1) * teamsPerPool);
+        if (poolTeams.length >= 2) {
+          poolWinners.push(poolTeams[0]?.name || `Winner Pool ${String.fromCharCode(65 + p)}`);
+          poolRunners.push(poolTeams[1]?.name || `Runner Pool ${String.fromCharCode(65 + p)}`);
+        }
+      }
+      
+      // Create quarter final matches with actual team names
+      if (poolWinners.length >= 2 && poolRunners.length >= 2) {
+        matches.push({
+          id: matchId++,
+          team1: poolWinners[0] || 'Winner Pool A',
+          team2: poolRunners[2] || 'Runner Pool C',
+          round: 'Quarter Final',
+          time: '2:00 PM',
+          pitch: 'Main Pitch',
+          status: 'Upcoming'
+        });
+        matches.push({
+          id: matchId++,
+          team1: poolWinners[3] || 'Winner Pool D',
+          team2: poolRunners[1] || 'Runner Pool B',
+          round: 'Quarter Final',
+          time: '2:30 PM',
+          pitch: 'Main Pitch',
+          status: 'Upcoming'
+        });
+      }
+    }
+  }
+  
+  return matches;
+};
+
 export default function ChampionshipDetails() {
   const { id } = useParams();
   const [championship, setChampionship] = useState<Partial<Championship> | null>(null);
   const [expandedCategories, setExpandedCategories] = useState(['Live']);
-  const [selectedTab, setSelectedTab] = useState('Ground Confirmation');
+  const [selectedTab, setSelectedTab] = useState<string>('Match Order');
   const [isFixtureSubmitted, setIsFixtureSubmitted] = useState(false);
   const [selectedGender, setSelectedGender] = useState('Men');
   const [selectedAttendanceTab, setSelectedAttendanceTab] = useState('State observer');
@@ -51,6 +168,12 @@ export default function ChampionshipDetails() {
   const [isBestPlayerOpen, setIsBestPlayerOpen] = useState(false);
   const [fixtureType, setFixtureType] = useState('');
   const [teamCount, setTeamCount] = useState(16);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [isGeneratingFixture, setIsGeneratingFixture] = useState(false);
+  const [teams, setTeams] = useState<{name: string; id: string}[]>([]);
+  const [showTeamManagement, setShowTeamManagement] = useState(false);
+  const [matchOrders, setMatchOrders] = useState<{id: number; team1: string; team2: string; round: string; time: string; pitch: string; status: string; score?: string; playerOfMatch?: string}[]>([]);
+  const [expandedMatchId, setExpandedMatchId] = useState<number | null>(null);
 
   const refreshData = () => {
     if (id && !id.startsWith('mock-')) {
@@ -62,15 +185,88 @@ export default function ChampionshipDetails() {
   useEffect(() => {
     if (id) {
       if (id.startsWith('mock-')) {
-        setChampionship(MOCK_DATA[id] || null);
+        const mockChamp = MOCK_DATA[id] || null;
+        // Initialize attendance data for mock championships
+        if (mockChamp) {
+          setChampionship({
+            ...mockChamp,
+            attendance: {
+              observerMarked: false,
+              referees: [
+                { name: 'Referee 1', marked: false },
+                { name: 'Referee 2', marked: false },
+                { name: 'Referee 3', marked: false }
+              ]
+            }
+          });
+        }
       } else {
         const data = championshipStore.getChampionshipById(id);
-        if (data) setChampionship(data);
+        if (data) {
+          // Initialize attendance data if not present
+          const championshipWithAttendance = {
+            ...data,
+            attendance: data.attendance || {
+              observerMarked: false,
+              referees: [
+                { name: 'Referee 1', marked: false },
+                { name: 'Referee 2', marked: false },
+                { name: 'Referee 3', marked: false }
+              ]
+            }
+          };
+          setChampionship(championshipWithAttendance);
+        }
       }
     }
   }, [id]);
 
+  useEffect(() => {
+    // Auto-set fixture configuration for ongoing championships
+    if (!fixtureType && !isFixtureSubmitted && championship?.title?.includes('Ongoing')) {
+      setFixtureType('knock-out');
+      setTeamCount(16);
+      // Generate random teams automatically for ongoing championships
+      const teamNames = [
+        'Idukki Eagles', 'Kannur Kings', 'Thrissur Tigers', 'Ernakulam Warriors',
+        'Kozhikode Knights', 'Palakkad Panthers', 'Malappuram Mavericks', 'Kollam Cobras',
+        'Alappuzha Archers', 'Pathanamthitta Patriots', 'Wayanad Wolves', 'Kottayam Crusaders',
+        'Thiruvananthapuram Titans', 'Kasaragod Giants', 'Chennai Champions', 'Bangalore Blazers'
+      ];
+      
+      const newTeams = teamNames.slice(0, 16).map((name, index) => ({
+        id: (index + 1).toString(),
+        name
+      }));
+      
+      setTeams(newTeams);
+      setIsFixtureSubmitted(true);
+      
+      // Store fixture configuration
+      if (id && championship) {
+        championshipStore.updateChampionship(id, {
+          fixtureConfig: {
+            type: 'knock-out',
+            teamCount: 16,
+            generatedAt: new Date().toISOString()
+          }
+        });
+      }
+    }
+  }, [fixtureType, isFixtureSubmitted, id, championship]);
+
+  useEffect(() => {
+    setMatchOrders(generateMatchOrders(teams, fixtureType));
+  }, [teams, fixtureType]);
+
   const handleUpdateScore = (matchId: number, score1: string, score2: string) => {
+    // Update matchOrders state for both new and existing scores
+    setMatchOrders(prev => prev.map(match => 
+      match.id === matchId 
+        ? { ...match, score: `${score1}-${score2}`, status: 'Completed' }
+        : match
+    ));
+    
     if (!id || !championship) return;
     const matches = [...(championship.matches || [])];
     const matchIdx = matches.findIndex(m => m.id === matchId);
@@ -110,8 +306,15 @@ export default function ChampionshipDetails() {
       }
       attendance.referees[index].marked = !attendance.referees[index].marked;
     }
-    championshipStore.updateChampionship(id, { attendance });
-    refreshData();
+    
+    if (id.startsWith('mock-')) {
+      // For mock championships, update local state directly
+      setChampionship(prev => prev ? { ...prev, attendance } : null);
+    } else {
+      // For real championships, update store
+      championshipStore.updateChampionship(id, { attendance });
+      refreshData();
+    }
   };
 
   const handleAddSelection = (name: string, team: string) => {
@@ -120,6 +323,81 @@ export default function ChampionshipDetails() {
     selectionList.push({ name, team });
     championshipStore.updateChampionship(id, { selectionList });
     refreshData();
+  };
+
+  const validateFixtureForm = () => {
+    const errors: {[key: string]: string} = {};
+    
+    if (!fixtureType) {
+      errors.fixtureType = 'Please select a fixture type';
+    }
+    
+    if (!teamCount) {
+      errors.teamCount = 'Please select number of teams';
+    }
+    
+    if (fixtureType?.includes('league') && teamCount < 4) {
+      errors.teamCount = 'League formats require at least 4 teams';
+    }
+    
+    if (fixtureType?.includes('knock-out') && teamCount < 2) {
+      errors.teamCount = 'Knockout formats require at least 2 teams';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleFixtureSubmit = async () => {
+    if (!validateFixtureForm()) return;
+    
+    setIsGeneratingFixture(true);
+    
+    // Simulate fixture generation
+    setTimeout(() => {
+      setIsGeneratingFixture(false);
+      setIsFixtureSubmitted(true);
+      
+      // Store fixture configuration
+      if (id && championship) {
+        championshipStore.updateChampionship(id, {
+          fixtureConfig: {
+            type: fixtureType,
+            teamCount,
+            generatedAt: new Date().toISOString()
+          }
+        });
+      }
+    }, 1500);
+  };
+
+  const handleAddTeam = (name: string) => {
+    if (!name.trim()) return;
+    const newTeam = {
+      id: Date.now().toString(),
+      name: name.trim()
+    };
+    setTeams(prev => [...prev, newTeam]);
+  };
+
+  const handleRemoveTeam = (id: string) => {
+    setTeams(prev => prev.filter(team => team.id !== id));
+  };
+
+  const generateRandomTeams = () => {
+    const teamNames = [
+      'Idukki Eagles', 'Kannur Kings', 'Thrissur Tigers', 'Ernakulam Warriors',
+      'Kozhikode Knights', 'Palakkad Panthers', 'Malappuram Mavericks', 'Kollam Cobras',
+      'Alappuzha Archers', 'Pathanamthitta Patriots', 'Wayanad Wolves', 'Kottayam Crusaders',
+      'Thiruvananthapuram Titans', 'Kasaragod Giants', 'Chennai Champions', 'Bangalore Blazers'
+    ];
+    
+    const newTeams = teamNames.slice(0, teamCount).map((name, index) => ({
+      id: (index + 1).toString(),
+      name
+    }));
+    
+    setTeams(newTeams);
   };
 
   const handleAddBestPlayer = (name: string, match: string) => {
@@ -151,12 +429,6 @@ export default function ChampionshipDetails() {
 
   const isExpanded = (cat: string) => expandedCategories.includes(cat);
 
-  const getKnockoutStageName = (count: number) => {
-    if (count > 8) return 'Pre Quarter Final';
-    if (count > 4) return 'Quarter Final';
-    if (count > 2) return 'Semi Final';
-    return 'Final';
-  };
 
   if (!championship) {
     return <div className="p-10 text-center text-gray-500">Loading championship details...</div>;
@@ -171,7 +443,7 @@ export default function ChampionshipDetails() {
 
       <div className="flex gap-12 items-start">
         {/* Sidebar */}
-        <div className="w-[280px] shrink-0 space-y-2">
+        <div className="w-[220px] shrink-0 space-y-2">
 
           {/* Live Championship Category */}
           <div className="space-y-1">
@@ -271,68 +543,55 @@ export default function ChampionshipDetails() {
             )}
 
             {selectedTab === 'Fixture' && !isFixtureSubmitted && (
-              <div className="space-y-8 flex-1 animate-in fade-in duration-300">
-                <h3 className="text-[20px] font-bold text-[#444]">Fixture</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-[800px]">
-                  {/* Type Selection */}
-                  <div className="space-y-4">
-                    <label className="text-[14px] text-[#777] font-medium">Type</label>
-                    <div className="relative">
-                      <select
-                        value={fixtureType}
-                        onChange={(e) => setFixtureType(e.target.value)}
-                        className="w-full appearance-none bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 pl-4 pr-10 rounded focus:ring-0 cursor-pointer font-medium"
-                      >
-                        <option value="">Select Fixture Type</option>
-                        <option value="knock-out">Knock out</option>
-                        <option value="league-cum-knock-out">League cum knock out</option>
-                        <option value="league-grand-finale">League cum knock out cum Grand finale system</option>
-                        <option value="round-robin">Round robin league</option>
-                        <option value="knock-out-cum-league">knock out cum league</option>
-                      </select>
-                      <ChevronDownIcon className="w-4 h-4 text-[#4b4b4b] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-[2.5]" />
-                    </div>
-                  </div>
-
-                  {/* Team no. Selection */}
-                  <div className="space-y-4">
-                    <label className="text-[14px] text-[#777] font-medium">Team no.</label>
-                    <div className="relative">
-                      <select
-                        value={teamCount}
-                        onChange={(e) => setTeamCount(Number(e.target.value))}
-                        className="w-full appearance-none bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 pl-4 pr-10 rounded focus:ring-0 cursor-pointer font-medium"
-                      >
-                        <option value="">Select Team</option>
-                        {[16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6].map((num) => (
-                          <option key={num} value={num}>{num} Teams</option>
-                        ))}
-                      </select>
-                      <ChevronDownIcon className="w-4 h-4 text-[#4b4b4b] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-[2.5]" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex justify-end gap-4 max-w-[800px] pt-4">
-                  <button className="bg-[#f4f4f4] hover:bg-[#eaeaea] text-[#777] text-[14px] px-8 py-2.5 rounded font-bold transition-all">
-                    Add Group
-                  </button>
-                  <button
-                    onClick={() => setIsFixtureSubmitted(true)}
-                    className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded font-bold transition-all shadow-md active:scale-95"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
+              <FixtureConfiguration
+                fixtureType={fixtureType}
+                teamCount={teamCount}
+                teams={teams}
+                formErrors={formErrors}
+                isGeneratingFixture={isGeneratingFixture}
+                showTeamManagement={showTeamManagement}
+                onFixtureTypeChange={(value) => {
+                  setFixtureType(value);
+                  if (formErrors.fixtureType) {
+                    setFormErrors(prev => ({ ...prev, fixtureType: '' }));
+                  }
+                }}
+                onTeamCountChange={(value) => {
+                  setTeamCount(value);
+                  if (formErrors.teamCount) {
+                    setFormErrors(prev => ({ ...prev, teamCount: '' }));
+                  }
+                }}
+                onAddTeam={handleAddTeam}
+                onRemoveTeam={handleRemoveTeam}
+                onGenerateRandomTeams={generateRandomTeams}
+                onToggleTeamManagement={() => setShowTeamManagement(!showTeamManagement)}
+                onSubmit={handleFixtureSubmit}
+                onReset={() => {
+                  setFixtureType('');
+                  setTeamCount(16);
+                  setTeams([]);
+                  setFormErrors({});
+                }}
+              />
             )}
 
             {selectedTab === 'Fixture' && isFixtureSubmitted && (
               <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                {/* Header with gender toggle and edit button */}
                 <div className="flex justify-between items-start">
-                  <h3 className="text-[20px] font-bold text-[#444]">Fixture</h3>
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-[20px] font-bold text-[#444]">Fixture</h3>
+                    <button
+                      onClick={() => {
+                        setIsFixtureSubmitted(false);
+                        setFormErrors({});
+                      }}
+                      className="text-[12px] text-[#666] hover:text-[#444] font-medium underline underline-offset-2"
+                    >
+                      Edit Configuration
+                    </button>
+                  </div>
                   <div className="flex gap-4 border-b border-[#eee]">
                     {['Men', 'Women'].map((gender) => (
                       <button
@@ -349,142 +608,164 @@ export default function ChampionshipDetails() {
                   </div>
                 </div>
 
-                {/* Bracket Visualization */}
-                <div className="relative py-16 flex justify-center items-center overflow-x-auto min-w-[800px]">
-                  <div className="flex items-center gap-4">
-
-                    {/* Left side bracket - Level 1 (Pre-QF) to Level 3 (Finalist) */}
-                    <div className="flex items-center gap-0">
-                      {/* Round of 16 / Pre-QF */}
-                      <div className="flex flex-col gap-4">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                          <div key={`l1-${i}`} className="w-8 h-8 border-r-2 border-t-2 border-b-2 border-[#444] rounded-r-sm" />
-                        ))}
+                {/* ═══════════════════════════════════════════════════════════════
+                    LEAGUE CUM KNOCK-OUT / LEAGUE GRAND FINALE
+                    Shows: 4 Groups → QF → SF → Final bracket
+                ═══════════════════════════════════════════════════════════════ */}
+                {(fixtureType === 'league-cum-knock-out' || fixtureType === 'league-grand-finale') && (
+                  <div className="space-y-10">
+                    {/* ── GROUP STAGE ── */}
+                    <div>
+                      <p className="text-[11px] font-bold text-[#aaa] uppercase tracking-widest mb-4">Group Stage</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        {/* Placeholder for 4 group tables */}
+                        {Array.from({ length: 4 }).map((_, pi) => {
+                          const teamsPerGroup = Math.ceil(teamCount / 4);
+                          const pool = String.fromCharCode(65 + pi); // A, B, C, D
+                          return (
+                            <div key={pool} className="border border-[#e8e8e8] rounded-lg overflow-hidden">
+                              <div className="bg-[#f4f4f4] px-4 py-2 flex items-center justify-between">
+                                <span className="text-[13px] font-bold text-[#444]">Pool {pool}</span>
+                                <span className="text-[11px] text-[#aaa] font-medium">{teamsPerGroup} teams</span>
+                              </div>
+                              <table className="w-full text-[12px]">
+                                <thead>
+                                  <tr className="border-b border-[#f0f0f0]">
+                                    <th className="text-left px-4 py-2 text-[#bbb] font-bold w-6">#</th>
+                                    <th className="text-left px-4 py-2 text-[#bbb] font-bold">Team</th>
+                                    <th className="px-3 py-2 text-[#bbb] font-bold text-center">P</th>
+                                    <th className="px-3 py-2 text-[#bbb] font-bold text-center">W</th>
+                                    <th className="px-3 py-2 text-[#bbb] font-bold text-center">L</th>
+                                    <th className="px-3 py-2 text-[#bbb] font-bold text-center">Pts</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[#f5f5f5]">
+                                  {Array.from({ length: teamsPerGroup }).map((_, ti) => {
+                                    const globalIndex = pi * teamsPerGroup + ti;
+                                    const teamName = globalIndex < teams.length ? teams[globalIndex].name : `Team ${globalIndex + 1}`;
+                                    const isWinner = ti === 0;
+                                    const isRunner = ti === 1;
+                                    return (
+                                      <tr key={ti} className={`${isWinner ? 'bg-[#f0fdf4]' : isRunner ? 'bg-[#fffbf0]' : 'hover:bg-[#fafafa]'} transition-colors`}>
+                                        <td className="px-4 py-2.5 text-[#bbb] font-medium">{ti + 1}</td>
+                                        <td className="px-4 py-2.5">
+                                          <div className="flex items-center gap-2">
+                                            <span className="font-bold text-[#555]">
+                                              {teamName}
+                                            </span>
+                                            {isWinner && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold">W</span>}
+                                            {isRunner && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold">R</span>}
+                                          </div>
+                                        </td>
+                                        <td className="px-3 py-2.5 text-center text-[#888]">—</td>
+                                        <td className="px-3 py-2.5 text-center text-[#888]">—</td>
+                                        <td className="px-3 py-2.5 text-center text-[#888]">—</td>
+                                        <td className="px-3 py-2.5 text-center font-bold text-[#555]">—</td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          );
+                        })}
                       </div>
-                      {/* Quarter Final */}
-                      <div className="flex flex-col gap-12 ml-0">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={`l2-${i}`} className="w-8 h-12 border-r-2 border-t-2 border-b-2 border-[#444] rounded-r-sm" />
-                        ))}
-                      </div>
-                      {/* Semi Final */}
-                      <div className="flex flex-col gap-28 ml-0">
-                        {[1, 2].map((i) => (
-                          <div key={`l3-${i}`} className="w-12 h-24 border-r-2 border-t-2 border-b-2 border-[#444] rounded-r-sm" />
-                        ))}
-                      </div>
-                      {/* Connector to Final */}
-                      <div className="w-12 h-[2px] bg-[#444]" />
                     </div>
 
-                    {/* Center Trophy */}
-                    <div className="flex flex-col items-center mx-8">
-                      <div className="w-[140px] h-[150px] relative flex flex-col items-center justify-center">
-                        {/* Trophy Cup SVG */}
-                        <svg className="w-[100px] h-[100px] text-[#f1c40f]" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 5h-2V3H7v2H5C3.9 5 3 5.9 3 7v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
-                        </svg>
+                    {/* ── KNOCKOUT BRACKET (Tabular Card Layout) ── */}
+                    <div>
+                      <p className="text-[11px] font-bold text-[#aaa] uppercase tracking-widest mb-5">Knockout Stage</p>
 
-                        {/* Pedestal / Base */}
-                        <div className="w-28 h-12 bg-[#444] rounded-sm mt-[-4px] relative flex flex-col items-center justify-center shadow-lg border-b-4 border-[#333]">
-                          <div className="w-16 h-[2px] bg-[#666] mb-2" />
-                          <div className="w-12 h-1 bg-[#555] opacity-50" />
+                      <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 lg:gap-8 overflow-x-auto pb-4">
+                        {/* Quarter Finals */}
+                        <div className="flex flex-col items-center space-y-4 w-full lg:w-auto">
+                          <h4 className="text-[12px] font-bold text-[#bbb] uppercase tracking-widest">Quarter Final</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-auto">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                              <div key={`qf-${i}`} className="w-full lg:w-[200px] bg-[#f7f7f7] border border-[#e0e0e0] rounded-lg p-3 space-y-2 shadow-sm">
+                                <p className="text-[10px] text-[#888] font-medium">Match {i + 1}</p>
+                                <div className="flex justify-between items-center text-[13px] font-bold text-[#444]">
+                                  <span className="truncate">{teams[0]?.name || 'Winner Pool A'}</span>
+                                  <span className="text-[#bbb] flex-shrink-0">vs</span>
+                                  <span className="truncate">{teams[1]?.name || 'Runner Pool B'}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Arrows to Semi Finals */}
+                        <div className="flex flex-col justify-around h-[300px] md:h-[unset] md:mt-10">
+                          {Array.from({ length: 2 }).map((_, i) => (
+                            <ChevronRightIcon key={`arrow-qf-sf-${i}`} className="w-6 h-6 text-[#ccc] stroke-[2.5] rotate-90 md:rotate-0" />
+                          ))}
+                        </div>
+
+                        {/* Semi Finals */}
+                        <div className="flex flex-col items-center space-y-16 w-full lg:w-auto">
+                          <h4 className="text-[12px] font-bold text-[#bbb] uppercase tracking-widest">Semi Final</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-auto">
+                            {Array.from({ length: 2 }).map((_, i) => (
+                              <div key={`sf-${i}`} className="w-full lg:w-[200px] bg-[#f0f0f0] border border-[#ddd] rounded-lg p-3 space-y-2 shadow-sm">
+                                <p className="text-[10px] text-[#888] font-medium">Match {i + 5}</p>
+                                <div className="flex justify-between items-center text-[13px] font-bold text-[#666]">
+                                  <span className="truncate">Winner QF{i * 2 + 1}</span>
+                                  <span className="text-[#bbb] flex-shrink-0">vs</span>
+                                  <span className="truncate">Winner QF{i * 2 + 2}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-[11px] text-[#888] mt-1">
+                                  <span>⏰ 10:00 AM</span>
+                                  <span>🏟️ Pitch {i + 1}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Arrow to Final */}
+                        <div className="flex flex-col justify-center h-[150px] md:h-[unset] md:mt-10">
+                          <ChevronRightIcon className="w-6 h-6 text-[#ccc] stroke-[2.5] rotate-90 md:rotate-0" />
+                        </div>
+
+                        {/* Final */}
+                        <div className="flex flex-col items-center space-y-4 w-full lg:w-auto">
+                          <h4 className="text-[12px] font-bold text-[#bbb] uppercase tracking-widest">Final</h4>
+                          <div className="w-full lg:w-[200px] bg-[#444] border border-[#333] rounded-lg p-3 space-y-2 text-white shadow-md">
+                            <p className="text-[10px] text-[#ccc] font-medium">Match 7</p>
+                            <div className="flex justify-between items-center text-[13px] font-bold">
+                              <span className="truncate">Winner SF1</span>
+                              <span className="text-[#bbb] flex-shrink-0">vs</span>
+                              <span className="truncate">Winner SF2</span>
+                            </div>
+                            <div className="flex justify-between items-center text-[11px] text-[#ccc] mt-1">
+                              <span>⏰ 3:00 PM</span>
+                              <span>🏟️ Main Pitch</span>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-[#aaa] font-medium mt-1">Winner</p>
                         </div>
                       </div>
-                      <div className="text-[14px] font-bold text-[#444] tracking-widest uppercase mt-6">
-                        {fixtureType.includes('league') ? 'Grand Final' : 'Final'}
-                      </div>
-                    </div>
 
-                    {/* Right side bracket - Level 3 to Level 1 */}
-                    <div className="flex items-center gap-0">
-                      {/* Connector to Final */}
-                      <div className="w-12 h-[2px] bg-[#444]" />
-                      {/* Semi Final */}
-                      <div className="flex flex-col gap-28 ml-0">
-                        {[1, 2].map((i) => (
-                          <div key={`r3-${i}`} className="w-12 h-24 border-l-2 border-t-2 border-b-2 border-[#444] rounded-l-sm" />
-                        ))}
-                      </div>
-                      {/* Quarter Final */}
-                      <div className="flex flex-col gap-12 ml-0">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={`r2-${i}`} className="w-8 h-12 border-l-2 border-t-2 border-b-2 border-[#444] rounded-l-sm" />
-                        ))}
-                      </div>
-                      {/* Round of 16 / Pre-QF */}
-                      <div className="flex flex-col gap-4">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                          <div key={`r1-${i}`} className="w-8 h-8 border-l-2 border-t-2 border-b-2 border-[#444] rounded-l-sm" />
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Match Order Table */}
-                <div className="space-y-4">
-                  <h4 className="text-[14px] font-bold text-[#444]">
-                    {fixtureType === 'league-cum-knock-out'
-                      ? 'Quarter Final Match Order'
-                      : `${getKnockoutStageName(teamCount)} match order`
-                    }
-                  </h4>
-                  <div className="max-w-[700px] border border-[#eee] rounded-md overflow-hidden">
-                    <table className="w-full text-left text-[13px]">
-                      <tbody className="divide-y divide-[#eee]">
-                        {(fixtureType === 'league-cum-knock-out' || fixtureType === 'league-grand-finale') ? (
-                          <>
-                            {[
-                              { p1: 'Winner of Pool A', p2: 'Runner of Pool C' },
-                              { p1: 'Winner of Pool D', p2: 'Runner of Pool B' },
-                              { p1: 'Winner of Pool C', p2: 'Runner of Pool A' },
-                              { p1: 'Winner of Pool B', p2: 'Runner of Pool D' },
-                            ].map((match, idx) => (
-                              <tr key={idx} className="group hover:bg-[#f9f9f9] transition-colors">
-                                <td className="py-2.5 px-4 font-bold text-[#555] bg-[#fdfdfd] w-[35%]">{match.p1}</td>
-                                <td className="py-2.5 px-4 border-x border-[#eee] bg-white w-[50px]"></td>
-                                <td className="py-2.5 px-4 font-bold text-[#555] text-center w-[10%]">Vs</td>
-                                <td className="py-2.5 px-4 border-x border-[#eee] bg-white w-[50px]"></td>
-                                <td className="py-2.5 px-4 font-bold text-[#555] bg-[#fdfdfd] w-[35%]">{match.p2}</td>
-                              </tr>
-                            ))}
-                          </>
-                        ) : (
-                          <>
-                            {Array.from({ length: Math.min(4, Math.floor(teamCount / 2)) }).map((_, idx) => (
-                              <tr key={idx} className="group hover:bg-[#f9f9f9] transition-colors">
-                                <td className="py-2.5 px-4 font-bold text-[#555] bg-[#fdfdfd] w-[35%]">Team {idx * 2 + 1}</td>
-                                <td className="py-2.5 px-4 border-x border-[#eee] bg-white w-[50px]"></td>
-                                <td className="py-2.5 px-4 font-bold text-[#555] text-center w-[10%]">Vs</td>
-                                <td className="py-2.5 px-4 border-x border-[#eee] bg-white w-[50px]"></td>
-                                <td className="py-2.5 px-4 font-bold text-[#555] bg-[#fdfdfd] w-[35%]">Team {idx * 2 + 2}</td>
-                              </tr>
-                            ))}
-                          </>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* League Specific Stages Info */}
-                {fixtureType.includes('league') && (
-                  <div className="flex gap-12 py-4 px-6 bg-[#f9f9f9] rounded-lg border border-[#eee] max-w-[700px]">
-                    <div className="flex-1">
-                      <h5 className="text-[12px] font-bold text-[#444] mb-2 uppercase tracking-wide">Next Stages</h5>
-                      <div className="flex gap-4">
-                        <span className="text-[12px] py-1 px-3 bg-white border border-[#ddd] rounded font-bold text-[#666]">Semi Final</span>
-                        <span className="text-[12px] py-1 px-3 bg-white border border-[#ddd] rounded font-bold text-[#666]">Losers Final</span>
-                        <span className="text-[12px] py-1 px-3 bg-[#444] text-white rounded font-bold">Grand Final</span>
-                      </div>
+                      {fixtureType === 'league-grand-finale' && (
+                        <div className="flex gap-3 pt-4 justify-center">
+                          <span className="text-[11px] py-1 px-3 bg-[#f4f4f4] border border-[#e0e0e0] rounded font-bold text-[#666]">→ Semi Final</span>
+                          <span className="text-[11px] py-1 px-3 bg-[#f4f4f4] border border-[#e0e0e0] rounded font-bold text-[#666]">→ Losers Final</span>
+                          <span className="text-[11px] py-1 px-3 bg-[#444] text-white rounded font-bold">→ Grand Final</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
-                {/* Signatories Section */}
-                <div className="pt-12 grid grid-cols-2 gap-20">
+                {/* ═══════════════════════════════════════════════════════════════
+                    KNOCK-OUT — Classic visual bracket
+                    Left side teams flow → center, right side ← center, trophy in middle
+                ═══════════════════════════════════════════════════════════════ */}
+                <KnockoutBracket teams={teams} teamCount={teamCount} />
+
+
+                {/* ── SIGNATORIES ── */}
+                <div className="pt-10 grid grid-cols-2 gap-20">
                   <div className="space-y-6">
                     <div>
                       <h5 className="text-[14px] font-bold text-[#444] mb-1">Name</h5>
@@ -507,14 +788,58 @@ export default function ChampionshipDetails() {
                   </div>
                 </div>
 
-                {/* Final Actions */}
-                <div className="pt-12 flex justify-end gap-4 border-t border-[#f0f0f0]">
-                  <button className="bg-[#f4f4f4] hover:bg-[#eaeaea] text-[#555] text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all active:scale-95">
-                    Share
-                  </button>
-                  <button className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all shadow-md active:scale-95">
-                    Download
-                  </button>
+                {/* ── FINAL ACTIONS ── */}
+                <div className="pt-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-[#f0f0f0]">
+                  <div className="text-[12px] text-[#666] font-medium">
+                    {championship.fixtureConfig && (
+                      <span>Generated: {new Date(championship.fixtureConfig.generatedAt).toLocaleDateString()} • {championship.fixtureConfig.teamCount} teams</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button 
+                      className="bg-[#f4f4f4] hover:bg-[#eaeaea] text-[#555] text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all active:scale-95"
+                      onClick={() => {
+                        // Share functionality
+                        if (navigator.share) {
+                          navigator.share({
+                            title: `${championship.title} - Fixtures`,
+                            text: `Check out the fixtures for ${championship.title}`,
+                            url: window.location.href
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link copied to clipboard!');
+                        }
+                      }}
+                    >
+                      Share
+                    </button>
+                    <button 
+                      className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all shadow-md active:scale-95"
+                      onClick={() => {
+                        // Export functionality - create a simple text export
+                        const fixtureData = {
+                          championship: championship.title,
+                          type: fixtureType,
+                          teamCount: teamCount,
+                          generatedAt: new Date().toISOString(),
+                          teams: teams.map(t => t.name)
+                        };
+                        
+                        const dataStr = JSON.stringify(fixtureData, null, 2);
+                        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                        
+                        const exportFileDefaultName = `${championship.title?.replace(/\s+/g, '_') || 'championship'}_fixtures.json`;
+                        
+                        const linkElement = document.createElement('a');
+                        linkElement.setAttribute('href', dataUri);
+                        linkElement.setAttribute('download', exportFileDefaultName);
+                        linkElement.click();
+                      }}
+                    >
+                      Download
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -540,19 +865,33 @@ export default function ChampionshipDetails() {
                 </div>
 
                 <div className="space-y-0 border border-[#eee] rounded-sm overflow-hidden">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                    <div key={i} className="group flex flex-col border-b border-[#eee] last:border-b-0">
-                      <div className="flex items-center justify-between py-4 px-4 hover:bg-[#fcfcfc] transition-colors cursor-pointer">
+                  {(matchOrders.length === 0 ? Array.from({ length: 8 }, (_, i) => ({
+                    id: i + 1,
+                    team1: 'Team Name',
+                    team2: 'Team Name',
+                    round: 'Match',
+                    time: '10:00 AM',
+                    pitch: 'Pitch 1',
+                    status: 'Upcoming',
+                    score: undefined,
+                    playerOfMatch: undefined
+                  })) : matchOrders).map((match) => (
+                    <div key={match.id} className="group flex flex-col border-b border-[#eee] last:border-b-0">
+                      <div 
+                        className="flex items-center justify-between py-4 px-4 hover:bg-[#fcfcfc] transition-colors cursor-pointer"
+                        onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}
+                      >
                         <div className="flex items-center gap-4 flex-1">
-                          <span className="text-[14px] text-[#888] font-medium w-6">{i}.</span>
-                          <span className="text-[14px] text-[#555] font-bold">Team Name</span>
+                          <span className="text-[14px] text-[#888] font-medium w-6">{match.id}.</span>
+                          <span className="text-[14px] text-[#555] font-bold truncate" title={match.team1}>{match.team1}</span>
                         </div>
                         <div className="flex flex-col items-center flex-1">
                           <span className="text-[14px] font-black text-[#555] tracking-widest">VS</span>
+                          <span className="text-[10px] text-[#aaa] font-medium mt-1">{match.round}</span>
                         </div>
                         <div className="flex items-center justify-between flex-1">
-                          <span className="text-[14px] text-[#555] font-bold">Team Name</span>
-                          {i === 1 ? (
+                          <span className="text-[14px] text-[#555] font-bold truncate" title={match.team2}>{match.team2}</span>
+                          {expandedMatchId === match.id ? (
                             <div className="w-5 h-5 flex items-center justify-center">
                               <div className="w-3 h-[2px] bg-[#bbb]" />
                             </div>
@@ -562,17 +901,36 @@ export default function ChampionshipDetails() {
                         </div>
                       </div>
 
-                      {/* Expanded Section (Hardcoded for first item to match design) */}
-                      {i === 1 && (
+                      {/* Expanded Section */}
+                      {expandedMatchId === match.id && (
                         <div className="bg-[#d9d9d9] py-3 px-10 flex gap-12">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[14px] text-[#666] font-bold">Score:</span>
-                            <span className="text-[14px] text-[#444] font-black">7 - 0</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[14px] text-[#666] font-bold">Player of the Match:</span>
-                            <span className="text-[14px] text-[#444] font-black">John Doe</span>
-                          </div>
+                          {match.status === 'Completed' ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[14px] text-[#666] font-bold">Score:</span>
+                                <span className="text-[14px] text-[#444] font-black">{match.score || '7-0'}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[14px] text-[#666] font-bold">Player of the Match:</span>
+                                <span className="text-[14px] text-[#444] font-black">{match.playerOfMatch || 'John Doe'}</span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[14px] text-[#666] font-bold">Time:</span>
+                                <span className="text-[14px] text-[#444] font-black">{match.time}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[14px] text-[#666] font-bold">Pitch:</span>
+                                <span className="text-[14px] text-[#444] font-black">{match.pitch}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[14px] text-[#666] font-bold">Status:</span>
+                                <span className="text-[14px] text-[#444] font-black">{match.status}</span>
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
@@ -653,39 +1011,47 @@ export default function ChampionshipDetails() {
                 </div>
 
                 <div className="space-y-0">
-                  {Array.from({ length: 7 }).map((_, i) => {
-                    const matchId = i + 1;
-                    const match = (championship.matches || []).find(m => m.id === matchId);
+                  {(matchOrders.length === 0 ? Array.from({ length: 7 }, (_, i) => ({
+                    id: i + 1,
+                    team1: 'Team Name',
+                    team2: 'Team Name',
+                    round: 'Match',
+                    time: '10:00 AM',
+                    pitch: 'Pitch 1',
+                    status: 'Upcoming',
+                    score: undefined,
+                    playerOfMatch: undefined
+                  })) : matchOrders.slice(0, 7)).map((match) => {
                     return (
-                      <div key={matchId} className="py-4 border-b border-[#eee] last:border-b-0">
-                        {editingMatchId === matchId ? (
+                      <div key={match.id} className="py-4 border-b border-[#eee] last:border-b-0">
+                        {editingMatchId === match.id ? (
                           <div className="flex items-start justify-between">
                             <form
                               onSubmit={(e) => {
                                 e.preventDefault();
                                 const formData = new FormData(e.currentTarget);
-                                handleUpdateScore(matchId, formData.get('s1') as string, formData.get('s2') as string);
+                                handleUpdateScore(match.id, formData.get('s1') as string, formData.get('s2') as string);
                               }}
                               className="flex items-center gap-8"
                             >
                               <div className="flex flex-col items-center gap-2">
-                                <span className="text-[13px] text-[#888] font-bold">{match?.team1 || 'Team A'}</span>
+                                <span className="text-[13px] text-[#888] font-bold">{match.team1}</span>
                                 <input
                                   name="s1"
-                                  defaultValue={match?.score1}
+                                  defaultValue={match.score?.split('-')[0]}
                                   type="text"
-                                  placeholder="Score"
+                                  placeholder="Enter Score"
                                   className="w-[120px] bg-[#f4f4f4] border-none text-[14px] py-2.5 px-4 rounded focus:ring-0 placeholder:text-[#ccc] font-medium"
                                 />
                               </div>
                               <span className="text-[14px] font-black text-[#555] mt-8">VS</span>
                               <div className="flex flex-col items-center gap-2">
-                                <span className="text-[13px] text-[#888] font-bold">{match?.team2 || 'Team B'}</span>
+                                <span className="text-[13px] text-[#888] font-bold">{match.team2}</span>
                                 <input
                                   name="s2"
-                                  defaultValue={match?.score2}
+                                  defaultValue={match.score?.split('-')[1]}
                                   type="text"
-                                  placeholder="Score"
+                                  placeholder="Enter Score"
                                   className="w-[120px] bg-[#f4f4f4] border-none text-[14px] py-2.5 px-4 rounded focus:ring-0 placeholder:text-[#ccc] font-medium"
                                 />
                               </div>
@@ -708,22 +1074,22 @@ export default function ChampionshipDetails() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-12">
-                              <div className="flex items-center gap-4">
-                                <span className="text-[14px] text-[#555] font-bold w-[100px] text-right">{match?.team1 || 'Team A'}</span>
-                                <span className="text-[18px] font-black text-[#444]">{match?.score1 || '-'}</span>
+                            <div className="flex items-center gap-8">
+                              <div className="flex flex-col items-center">
+                                <span className="text-[14px] text-[#555] font-bold">{match.team1}</span>
+                                {match.score && <span className="text-[18px] font-black text-[#444] mt-1">{match.score?.split('-')[0]}</span>}
                               </div>
                               <span className="text-[14px] font-black text-[#555] tracking-widest opacity-20">VS</span>
-                              <div className="flex items-center gap-4">
-                                <span className="text-[18px] font-black text-[#444]">{match?.score2 || '-'}</span>
-                                <span className="text-[14px] text-[#555] font-bold w-[100px] text-left">{match?.team2 || 'Team B'}</span>
+                              <div className="flex flex-col items-center">
+                                <span className="text-[14px] text-[#555] font-bold">{match.team2}</span>
+                                {match.score && <span className="text-[18px] font-black text-[#444] mt-1">{match.score?.split('-')[1]}</span>}
                               </div>
                             </div>
                             <button
-                              onClick={() => setEditingMatchId(matchId)}
+                              onClick={() => setEditingMatchId(match.id)}
                               className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                             >
-                              {match?.score1 ? 'Edit Score' : 'Add Score'}
+                              {match.score ? 'Edit Score' : 'Add Score'}
                             </button>
                           </div>
                         )}

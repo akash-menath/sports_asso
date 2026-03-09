@@ -59,6 +59,11 @@ export interface Championship {
         referees: { name: string; marked: boolean }[];
     };
     selectionList?: { name: string; team: string }[];
+    fixtureConfig?: {
+        type: string;
+        teamCount: number;
+        generatedAt: string;
+    };
 }
 
 const STORAGE_KEY = 'championships_data';

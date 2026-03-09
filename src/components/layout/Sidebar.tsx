@@ -49,7 +49,7 @@ export default function Sidebar() {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white px-8 py-10 w-64 border-r border-[#f0f0f0]">
+    <div className="flex flex-col h-full bg-white px-6 py-10 w-52 border-r border-[#f0f0f0]">
       {/* Navigation */}
       <nav className="flex-1 mt-4">
         {sidebarItems.map((item) => renderSidebarItem(item))}
