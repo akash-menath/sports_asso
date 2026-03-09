@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronUpIcon, ChevronDownIcon, PlusIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronUpIcon, ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 import SlideOver from '../../components/ui/SlideOver';
 import { championshipStore, type Championship } from '../../lib/championshipStore';
 import { 
