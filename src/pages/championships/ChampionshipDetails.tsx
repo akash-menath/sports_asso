@@ -672,7 +672,7 @@ export default function ChampionshipDetails() {
                       Share
                     </button>
                     <button 
-                      className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all shadow-md active:scale-95"
+                      className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-2.5 rounded-lg font-bold transition-all shadow-md active:scale-95"
                       onClick={() => {
                         // Export functionality - create a simple text export
                         const fixtureData = {
@@ -798,7 +798,7 @@ export default function ChampionshipDetails() {
                   <button className="bg-[#f2f2f2] hover:bg-[#e8e8e8] text-[#777] text-[14px] px-12 py-3 rounded-md font-bold transition-all">
                     Share
                   </button>
-                  <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[14px] px-12 py-3 rounded-md font-bold transition-all shadow-md">
+                  <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[14px] px-12 py-3 rounded-md font-bold transition-all shadow-md">
                     Download
                   </button>
                 </div>
@@ -922,7 +922,7 @@ export default function ChampionshipDetails() {
                                 </button>
                                 <button
                                   type="submit"
-                                  className="bg-[#444] hover:bg-[#333] text-white text-[13px] px-8 py-2 rounded font-bold transition-all"
+                                  className="bg-[#444] hover:bg-[#16a34a] text-white text-[13px] px-8 py-2 rounded font-bold transition-all"
                                 >
                                   Save
                                 </button>
@@ -944,7 +944,7 @@ export default function ChampionshipDetails() {
                             </div>
                             <button
                               onClick={() => setEditingMatchId(match.id)}
-                              className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
+                              className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                             >
                               {match.score ? 'Edit Score' : 'Add Score'}
                             </button>
@@ -963,7 +963,7 @@ export default function ChampionshipDetails() {
                   <h3 className="text-[20px] font-bold text-[#444]">Reporting</h3>
                   <button
                     onClick={() => setIsReportingOpen(true)}
-                    className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
+                    className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                   >
                     Add Report
                   </button>
@@ -996,7 +996,7 @@ export default function ChampionshipDetails() {
                         }}
                         className={`text-[13px] px-8 py-2 rounded font-bold transition-all ${report.status === 'Solved'
                           ? 'bg-[#d9d9d9] text-[#aaa] cursor-default'
-                          : 'bg-[#4d4d4d] hover:bg-[#333] text-white'
+                          : 'bg-[#4d4d4d] hover:bg-[#16a34a] text-white'
                           }`}
                       >
                         {report.status === 'Solved' ? 'Solved' : 'Resolve'}
@@ -1019,7 +1019,7 @@ export default function ChampionshipDetails() {
                     <h4 className="text-[14px] font-bold text-[#555]">Championship Final Results.</h4>
                     <button
                       onClick={() => setIsFinalResultsOpen(true)}
-                      className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
+                      className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                     >
                       Add Results
                     </button>
@@ -1030,7 +1030,7 @@ export default function ChampionshipDetails() {
                     <h4 className="text-[14px] font-bold text-[#555]">Best Player Awards</h4>
                     <button
                       onClick={() => setIsBestPlayerOpen(true)}
-                      className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
+                      className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                     >
                       Add Best player
                     </button>
@@ -1039,7 +1039,7 @@ export default function ChampionshipDetails() {
                   {/* Guest Recognitions Card */}
                   <div className="bg-[#f6f6f6] rounded-xl p-8 space-y-6">
                     <h4 className="text-[14px] font-bold text-[#555]">Guest recognitions & mementos.</h4>
-                    <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                    <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                       Add Guest
                     </button>
                   </div>
@@ -1049,7 +1049,7 @@ export default function ChampionshipDetails() {
                     <h4 className="text-[14px] font-bold text-[#555]">Referees & Committee attendance logs.</h4>
                     <div className="flex justify-between items-center">
                       <span className="text-[20px] font-bold text-[#444]">Referee name</span>
-                      <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                      <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                         Add Attendance
                       </button>
                     </div>
@@ -1058,7 +1058,7 @@ export default function ChampionshipDetails() {
                   {/* Selection List Card */}
                   <div className="bg-[#f6f6f6] rounded-xl p-8 space-y-6">
                     <h4 className="text-[14px] font-bold text-[#555]">Selection List</h4>
-                    <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                    <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                       Add Players
                     </button>
                   </div>
@@ -1071,10 +1071,10 @@ export default function ChampionshipDetails() {
                 <div className="flex justify-between items-center border-b border-[#eee] pb-4">
                   <h3 className="text-[20px] font-bold text-[#444]">Championship Results</h3>
                   <div className="flex gap-4">
-                    <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                    <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                       Download
                     </button>
-                    <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                    <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                       Create Post
                     </button>
                   </div>
@@ -1182,11 +1182,11 @@ export default function ChampionshipDetails() {
                         const team = prompt('Enter Team Name:');
                         if (name && team) handleAddSelection(name, team);
                       }}
-                      className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
+                      className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all"
                     >
                       Add Player
                     </button>
-                    <button className="bg-[#4d4d4d] hover:bg-[#333] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
+                    <button className="bg-[#4d4d4d] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded font-bold transition-all">
                       Download
                     </button>
                   </div>
@@ -1263,7 +1263,7 @@ export default function ChampionshipDetails() {
             <div className="flex justify-end pt-4">
               <button
                 type="submit"
-                className="bg-[#444] hover:bg-[#333] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
+                className="bg-[#444] hover:bg-[#16a34a] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
               >
                 Submit
               </button>
@@ -1326,7 +1326,7 @@ export default function ChampionshipDetails() {
             <div className="flex justify-end pt-4">
               <button
                 type="submit"
-                className="bg-[#444] hover:bg-[#333] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
+                className="bg-[#444] hover:bg-[#16a34a] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
               >
                 Submit
               </button>
@@ -1389,7 +1389,7 @@ export default function ChampionshipDetails() {
             <div className="flex justify-end pt-4">
               <button
                 type="submit"
-                className="bg-[#444] hover:bg-[#333] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
+                className="bg-[#444] hover:bg-[#16a34a] text-white text-[14px] px-14 py-3 rounded font-bold transition-all shadow-md"
               >
                 Submit
               </button>

@@ -91,7 +91,7 @@ export default function PlayersDashboard() {
 
           <button
             onClick={() => setIsRegistrationOpen(true)}
-            className="bg-[#555] hover:bg-[#444] text-white text-[13px] px-8 py-2 rounded-sm font-medium transition-colors ml-2"
+            className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[13px] px-8 py-2 rounded-sm font-medium transition-colors ml-2"
           >
             Add
           </button>
@@ -104,25 +104,27 @@ export default function PlayersDashboard() {
           <div
             key={player.id}
             onClick={() => setSelectedPlayer(player)}
-            className="bg-[#f5f5f5] rounded-xl p-5 relative flex gap-5 shrink-0 cursor-pointer hover:bg-[#f0f0f0] transition-colors"
+            className="bg-[#e0f2fe] rounded-xl p-6 relative flex gap-5 shrink-0 cursor-pointer hover:bg-[#bae6fd] transition-colors group"
           >
             {/* Status Label */}
-            <div className={`absolute top-5 right-5 text-[13px] font-bold ${player.status === 'Approved' ? 'text-[#555]' : 'text-[#666]'}`}>
+            <div className={`absolute top-5 right-6 text-[13px] font-bold ${player.status === 'Approved' ? 'text-[#22c55e]' : 'text-[#6b7280]'}`}>
               {player.status}
             </div>
 
             {/* Image Placeholder */}
-            <div className="w-[100px] h-[100px] rounded-lg border-[2.5px] border-[#999] flex items-center justify-center shrink-0 bg-transparent relative overflow-hidden mt-2">
-              <PhotoIcon className="w-14 h-14 text-[#999] stroke-1" />
+            <div className="w-[100px] h-[100px] rounded-lg border-[2px] border-white shadow-sm flex items-center justify-center shrink-0 bg-white relative overflow-hidden mt-1">
+              <PhotoIcon className="w-12 h-12 text-[#9ca3af] stroke-1" />
             </div>
 
             {/* Player Details */}
-            <div className="flex flex-col justify-center pt-2 w-full">
-              <h3 className="text-[15px] font-bold text-[#444] leading-tight mb-1">{player.name}</h3>
-              <p className="text-[13px] text-[#777] leading-snug">{player.level}</p>
-              <p className="text-[13px] text-[#777] leading-snug mb-2">{player.district}</p>
-              <p className="text-[12px] text-[#777] leading-snug">{player.phone}</p>
-              <p className="text-[12px] text-[#777] leading-snug">{player.email}</p>
+            <div className="flex flex-col justify-center w-full">
+              <h3 className="text-[17px] font-bold text-[#3b82f6] leading-tight mb-1 group-hover:text-[#2563eb] transition-colors">{player.name}</h3>
+              <p className="text-[13px] text-[#4b5563] font-semibold leading-snug">{player.level}</p>
+              <p className="text-[13px] text-[#6b7280] font-medium leading-snug mb-2">{player.district}</p>
+              <div className="space-y-0.5">
+                <p className="text-[12px] text-[#9ca3af] font-medium leading-snug">{player.phone}</p>
+                <p className="text-[12px] text-[#9ca3af] font-medium leading-snug truncate max-w-[150px]">{player.email}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -185,7 +187,7 @@ export default function PlayersDashboard() {
               {selectedPlayer.status !== 'Approved' && (
                 <button
                   onClick={handleApprove}
-                  className="px-8 py-2.5 bg-[#555] text-white text-[13px] font-medium rounded-sm hover:bg-[#444] transition-colors"
+                  className="px-8 py-2.5 bg-[#22c55e] text-white text-[13px] font-medium rounded-sm hover:bg-[#16a34a] transition-colors"
                 >
                   Approve
                 </button>
@@ -258,7 +260,7 @@ export default function PlayersDashboard() {
               </button>
               <button
                 type="submit"
-                className="px-8 py-2.5 bg-[#555] text-white text-[13px] font-medium rounded-sm hover:bg-[#444] transition-colors"
+                className="px-8 py-2.5 bg-[#22c55e] text-white text-[13px] font-medium rounded-sm hover:bg-[#16a34a] transition-colors"
               >
                 Register Player
               </button>

@@ -248,8 +248,8 @@ export default function StateAssociationOnboarding() {
                   style={{ borderColor: selected ? '#4b4b4b' : 'transparent' }}
                 >
                   <div className="flex items-center gap-4 mb-6">
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selected ? 'border-[#4b4b4b]' : 'border-[#bbb]'}`}>
-                      {selected && <div className="w-3 h-3 bg-[#4b4b4b] rounded-full" />}
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selected ? 'border-[#22c55e]' : 'border-[#bbb]'}`}>
+                      {selected && <div className="w-3 h-3 bg-[#22c55e] rounded-full" />}
                     </div>
                     <span className="text-[18px] font-bold text-[#444]">{pkg.title}</span>
                   </div>
@@ -582,7 +582,7 @@ export default function StateAssociationOnboarding() {
             <div key={step} className="flex items-center">
               <div
                 className={`py-2 px-6 rounded-full border-[1.5px] transition-colors flex items-center justify-center whitespace-nowrap text-[13px] font-medium ${isActive
-                  ? 'bg-[#4b4b4b] border-[#4b4b4b] text-white'
+                  ? 'bg-[#22c55e] border-[#22c55e] text-white'
                   : isCompleted
                     ? 'bg-[#f3f4f6] border-transparent text-[#9ca3af]'
                     : 'bg-white border-[#6b7280] text-[#6b7280]'
@@ -613,7 +613,7 @@ export default function StateAssociationOnboarding() {
         )}
         <button
           onClick={handleNext}
-          className="px-10 py-2.5 bg-[#4b4b4b] text-white text-[14px] font-medium hover:bg-[#333] transition-colors rounded-sm shadow-sm"
+          className="px-10 py-2.5 bg-[#22c55e] text-white text-[14px] font-medium hover:bg-[#16a34a] transition-colors rounded-sm shadow-sm"
         >
           {currentStep === steps.length ? 'Submit' : 'Next'}
         </button>

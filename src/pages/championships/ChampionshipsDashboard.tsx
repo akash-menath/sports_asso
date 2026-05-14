@@ -47,7 +47,7 @@ export default function ChampionshipsDashboard() {
 
       {/* Title */}
       <div className="mb-6">
-        <h1 className="text-[28px] font-bold text-[#555] tracking-tight">Championships</h1>
+        <h1 className="text-[28px] font-bold text-[#444] tracking-tight">Championships</h1>
       </div>
 
       <div className="flex gap-6 mb-6">
@@ -55,17 +55,17 @@ export default function ChampionshipsDashboard() {
         {ongoing && (
           <Link
             to={`/dashboard/championships/${ongoing.id}`}
-            className="bg-[#f4f4f4] rounded-xl p-5 flex-1 relative flex flex-col cursor-pointer hover:bg-[#eaeaea] transition-colors"
+            className="bg-[#e0f8e9] rounded-xl p-8 flex-1 relative flex flex-col cursor-pointer hover:bg-[#dcfce7] transition-colors"
           >
             <div className="flex justify-between items-center mb-6">
-              <span className="text-[13px] font-bold text-[#666]">{ongoing.status}</span>
+              <span className="text-[14px] font-bold text-[#444]">{ongoing.status}</span>
               {(ongoing as any).date && (
-                <span className="text-[13px] font-bold text-[#666]">{(ongoing as any).date}</span>
+                <span className="text-[14px] font-bold text-[#444]">{(ongoing as any).date}</span>
               )}
             </div>
             <div className="mt-auto">
-              <h2 className="text-[20px] font-bold text-[#555] leading-snug mb-1">{ongoing.title}</h2>
-              <p className="text-[12px] text-[#777]">Venue: {ongoing.venue}</p>
+              <h2 className="text-[24px] font-bold text-[#22c55e] tracking-tight leading-snug mb-2">{ongoing.title}</h2>
+              <p className="text-[13px] text-[#6b7280] font-medium">Venue: {ongoing.venue}</p>
             </div>
           </Link>
         )}
@@ -76,10 +76,10 @@ export default function ChampionshipsDashboard() {
           className="w-[300px] shrink-0 flex items-center justify-between px-2 cursor-pointer group"
         >
           <div className="pl-4">
-            <span className="text-[20px] font-bold text-[#555] leading-tight block group-hover:text-[#333] transition-colors">Create New<br />Championship</span>
+            <span className="text-[20px] font-bold text-[#555] leading-tight block group-hover:text-[#22c55e] transition-colors">Create New<br />Championship</span>
           </div>
-          <div className="w-[45px] h-[45px] border-[1.5px] border-[#ddd] rounded-sm flex items-center justify-center bg-white group-hover:border-[#bbb] transition-colors shrink-0 mr-4">
-            <PlusIcon className="w-6 h-6 text-[#555] stroke-2" />
+          <div className="w-[45px] h-[45px] border-[1.5px] border-[#ddd] rounded-sm flex items-center justify-center bg-white group-hover:border-[#22c55e] transition-colors shrink-0 mr-4">
+            <PlusIcon className="w-6 h-6 text-[#555] group-hover:text-[#22c55e] stroke-2" />
           </div>
         </Link>
       </div>
@@ -90,35 +90,35 @@ export default function ChampionshipsDashboard() {
           <Link
             key={championship.id}
             to={`/dashboard/championships/${championship.id}`}
-            className="bg-[#f4f4f4] rounded-xl p-5 relative flex flex-col h-[150px] cursor-pointer hover:bg-[#eaeaea] transition-colors"
+            className={`${championship.status === 'Upcoming' ? 'bg-[#e0f2fe] hover:bg-[#bae6fd]' : 'bg-[#f4f4f4] hover:bg-[#eaeaea]'} rounded-xl p-6 relative flex flex-col h-[180px] cursor-pointer transition-colors`}
           >
             <div className="flex justify-between items-start mb-2">
-              <span className="text-[13px] font-bold text-[#666]">{championship.status}</span>
+              <span className="text-[13px] font-bold text-[#444]">{championship.status}</span>
               {championship.date && (
-                <span className="text-[13px] font-bold text-[#666]">{championship.date}</span>
+                <span className="text-[13px] font-bold text-[#444]">{championship.date}</span>
               )}
             </div>
 
             <div className="mt-auto flex justify-between items-end">
               <div className="pr-4">
-                <h2 className="text-[20px] font-bold text-[#555] leading-tight mb-1">{championship.title}</h2>
-                <p className="text-[12px] text-[#777]">Venue: {championship.venue}</p>
+                <h2 className={`text-[20px] font-bold ${championship.status === 'Upcoming' ? 'text-[#3b82f6]' : 'text-[#444]'} leading-tight mb-2 tracking-tight`}>{championship.title}</h2>
+                <p className="text-[12px] text-[#6b7280] font-medium">Venue: {championship.venue}</p>
               </div>
 
               {/* Countdown timers for Upcoming */}
               {championship.countdown && (
                 <div className="flex gap-[6px] shrink-0">
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#ddd] rounded-sm px-2 py-1 text-[13px] font-bold text-[#555] mb-[2px]">{championship.countdown.days}</div>
-                    <span className="text-[8px] text-[#888]">days</span>
+                    <div className="bg-[#fff] rounded-sm px-2 py-1 text-[13px] font-bold text-[#3b82f6] shadow-sm mb-[2px]">{championship.countdown.days}</div>
+                    <span className="text-[8px] text-[#888] font-medium">days</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#ddd] rounded-sm px-2 py-1 text-[13px] font-bold text-[#555] mb-[2px]">{championship.countdown.hours}</div>
-                    <span className="text-[8px] text-[#888]">hours</span>
+                    <div className="bg-[#fff] rounded-sm px-2 py-1 text-[13px] font-bold text-[#3b82f6] shadow-sm mb-[2px]">{championship.countdown.hours}</div>
+                    <span className="text-[8px] text-[#888] font-medium">hours</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#ddd] rounded-sm px-2 py-1 text-[13px] font-bold text-[#555] mb-[2px]">{championship.countdown.minutes}</div>
-                    <span className="text-[8px] text-[#888]">minutes</span>
+                    <div className="bg-[#fff] rounded-sm px-2 py-1 text-[13px] font-bold text-[#3b82f6] shadow-sm mb-[2px]">{championship.countdown.minutes}</div>
+                    <span className="text-[8px] text-[#888] font-medium">mins</span>
                   </div>
                 </div>
               )}

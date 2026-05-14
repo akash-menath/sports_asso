@@ -140,7 +140,7 @@ export default function Profile() {
 
           {/* Action Buttons */}
           <div className="pt-8 border-t border-[#f0f0f0] flex gap-4">
-            <button className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-3 rounded-2xl font-bold transition-all shadow-md active:scale-95">
+            <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-3 rounded-2xl font-bold transition-all shadow-md active:scale-95">
               Edit Profile
             </button>
             <button className="border border-[#e0e0e0] hover:bg-[#f9f9f9] text-[#666] text-[14px] px-10 py-3 rounded-2xl font-bold transition-all active:scale-95">

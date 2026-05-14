@@ -160,7 +160,7 @@ export default function CreateChampionship() {
           </h2>
           <button
             onClick={() => navigate('/dashboard/championships')}
-            className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors min-w-[120px]"
+            className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors min-w-[120px]"
           >
             Ok
           </button>
@@ -169,7 +169,7 @@ export default function CreateChampionship() {
         <>
           {/* Title */}
           <div className="mb-6">
-            <h1 className="text-[28px] font-bold text-[#555] tracking-tight">Create Championship</h1>
+            <h1 className="text-[28px] font-bold text-[#444] tracking-tight">Create Championship</h1>
           </div>
 
           {/* Level Radio Group */}
@@ -177,7 +177,7 @@ export default function CreateChampionship() {
             {['District', 'State', 'National', 'International'].map((opt) => (
               <label key={opt} className="flex items-center gap-2 cursor-pointer group">
                 <div className={`w-[18px] h-[18px] rounded-full border-[1.5px] flex items-center justify-center ${formData.level === opt ? 'border-[#555]' : 'border-[#aaa] group-hover:border-[#888]'}`}>
-                  {formData.level === opt && <div className="w-[10px] h-[10px] rounded-full bg-[#555]" />}
+                  {formData.level === opt && <div className="w-[10px] h-[10px] rounded-full bg-[#22c55e]" />}
                 </div>
                 <input
                   type="radio"
@@ -199,17 +199,17 @@ export default function CreateChampionship() {
               return (
                 <div key={step} className="flex items-center">
                   <div
-                    className={`py-2 px-6 rounded-full border-[1.5px] transition-colors flex items-center justify-center whitespace-nowrap text-[13px] font-medium ${isActive
-                      ? 'bg-[#4b4b4b] border-[#4b4b4b] text-white'
+                    className={`py-2.5 px-6 rounded-full border-[1.5px] transition-colors flex items-center justify-center whitespace-nowrap text-[13px] font-bold ${isActive
+                      ? 'bg-[#22c55e] border-[#22c55e] text-white shadow-sm'
                       : isCompleted
-                        ? 'bg-[#f3f4f6] border-transparent text-[#9ca3af]'
-                        : 'bg-white border-[#6b7280] text-[#6b7280]'
+                        ? 'bg-[#f4f4f4] border-transparent text-[#9ca3af]'
+                        : 'bg-white border-[#d1d5db] text-[#9ca3af]'
                       }`}
                   >
                     {step}
                   </div>
                   {index < STEPS.length - 1 && (
-                    <div className="w-[30px] h-[1px] bg-[#6b7280] shrink-0" />
+                    <div className="w-[30px] h-[1.5px] bg-[#e5e7eb] shrink-0" />
                   )}
                 </div>
               );
@@ -303,7 +303,7 @@ export default function CreateChampionship() {
               <div className="pt-8 flex justify-end max-w-[650px]">
                 <button
                   onClick={() => setCurrentStep(1)}
-                  className="bg-[#555] hover:bg-[#444] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
                 >
                   Next
                 </button>
@@ -393,7 +393,7 @@ export default function CreateChampionship() {
                 </button>
                 <button
                   onClick={() => setCurrentStep(2)}
-                  className="bg-[#555] hover:bg-[#444] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
                 >
                   Next
                 </button>
@@ -463,7 +463,7 @@ export default function CreateChampionship() {
                 </button>
                 <button
                   onClick={() => setCurrentStep(3)}
-                  className="bg-[#555] hover:bg-[#444] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors"
                 >
                   Next
                 </button>
@@ -573,7 +573,7 @@ export default function CreateChampionship() {
 
               <div className="pt-8 flex justify-end gap-4 max-w-[650px]">
                 <button onClick={() => setCurrentStep(2)} className="bg-[#f4f4f4] hover:bg-[#eaeaea] text-[#555] text-[14px] px-10 py-3 rounded-sm font-medium transition-colors">Back</button>
-                <button onClick={() => setCurrentStep(4)} className="bg-[#555] hover:bg-[#444] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors">Next</button>
+                <button onClick={() => setCurrentStep(4)} className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-3 rounded-sm font-medium transition-colors">Next</button>
               </div>
             </div>
           )}
@@ -641,7 +641,7 @@ export default function CreateChampionship() {
                 </button>
                 <button
                   onClick={() => setCurrentStep(5)}
-                  className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors"
                 >
                   Next
                 </button>
@@ -695,7 +695,7 @@ export default function CreateChampionship() {
                 </button>
                 <button
                   onClick={() => setCurrentStep(6)}
-                  className="bg-[#555] hover:bg-[#444] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors"
+                  className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-12 py-2.5 rounded font-medium transition-colors"
                 >
                   Next
                 </button>
@@ -786,7 +786,7 @@ export default function CreateChampionship() {
                     </button>
                     <button
                       onClick={handleSubmit}
-                      className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded font-medium transition-colors"
+                      className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[14px] px-10 py-2.5 rounded font-medium transition-colors"
                     >
                       {isEditMode ? 'Resend' : 'Send'}
                     </button>

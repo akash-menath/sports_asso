@@ -20,7 +20,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'profile', name: 'Profile', path: '/dashboard/profile' },
 ];
 
-export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isMobileMenuOpen?: boolean; setIsMobileMenuOpen?: (state: boolean) => void }) {
+export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen?: boolean; setIsSidebarOpen?: (state: boolean) => void }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,8 +31,9 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
   };
 
   const handleItemClick = () => {
-    if (setIsMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
+    // Only close the sidebar automatically on mobile/tablet when an item is clicked
+    if (window.innerWidth < 1024 && setIsSidebarOpen) {
+      setIsSidebarOpen(false);
     }
   };
 
@@ -44,11 +45,10 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
         <Link
           to={item.path}
           onClick={handleItemClick}
-          className={`block text-sm transition-colors duration-200 ${
-            isActive 
-              ? 'text-gray-900 font-semibold bg-gray-100 rounded-lg px-3 py-2' 
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg px-3 py-2'
-          }`}
+          className={`block text-sm transition-colors duration-200 ${isActive
+            ? 'text-gray-900 font-semibold bg-gray-100 rounded-lg px-3 py-2'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg px-3 py-2'
+            }`}
         >
           {item.name}
         </Link>
@@ -59,10 +59,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white px-4 py-6 w-64 border-r border-gray-200">
       {/* Logo/Brand for mobile */}
-      <div className="lg:hidden mb-8">
-        <div className="text-xl font-bold text-gray-900">KSA</div>
+      <div className="lg:hidden mb-8 px-2 flex items-center gap-3">
+        <Link to="/dashboard" onClick={handleItemClick}>
+          <img src="/logo.png" alt="KSA Logo" className="h-10 w-auto" />
+        </Link>
       </div>
-      
+
       {/* Navigation */}
       <nav className="flex-1 mt-4">
         {sidebarItems.map((item) => renderSidebarItem(item))}
@@ -83,12 +85,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
   return (
     <>
       {/* Mobile sidebar overlay */}
-      {isMobileMenuOpen && (
+      {isSidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
-            onClick={() => setIsMobileMenuOpen?.(false)}
+            onClick={() => setIsSidebarOpen?.(false)}
             aria-hidden="true"
           />
           {/* Sidebar content */}
@@ -96,7 +98,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <div className="text-lg font-semibold text-gray-900">Menu</div>
               <button
-                onClick={() => setIsMobileMenuOpen?.(false)}
+                onClick={() => setIsSidebarOpen?.(false)}
                 className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-2 rounded-md"
                 aria-label="Close menu"
               >
@@ -111,7 +113,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isM
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
+      <div className={`${isSidebarOpen ? 'lg:flex' : 'hidden'} hidden lg:flex-shrink-0 transition-all duration-300`}>
         {sidebarContent}
       </div>
     </>

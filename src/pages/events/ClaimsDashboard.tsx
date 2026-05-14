@@ -35,7 +35,7 @@ export default function ClaimsDashboard() {
         <div className="flex items-center gap-6">
           <SelectDropdown label="Filter" />
 
-          <button className="bg-[#555] hover:bg-[#444] text-white text-[13px] px-8 py-2 rounded-sm font-medium transition-colors ml-2 shadow-sm">
+          <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[13px] px-8 py-2 rounded-sm font-medium transition-colors ml-2 shadow-sm">
             Add
           </button>
         </div>
@@ -49,8 +49,8 @@ export default function ClaimsDashboard() {
               key={claim.id}
               onClick={() => setSelectedClaimId(claim.id)}
               className={`w-full text-left px-5 py-3.5 rounded-sm transition-colors text-[14px] font-medium ${selectedClaimId === claim.id
-                  ? 'bg-[#ccc] text-[#333]'
-                  : 'bg-[#f4f4f4] text-[#666] hover:bg-[#eaeaea]'
+                ? 'bg-[#ccc] text-[#333]'
+                : 'bg-[#f4f4f4] text-[#666] hover:bg-[#eaeaea]'
                 }`}
             >
               {claim.title}
@@ -67,10 +67,10 @@ export default function ClaimsDashboard() {
                 Claim Title #{selectedClaim.id}
               </h2>
               <div className="flex gap-3">
-                <button className="bg-[#555] hover:bg-[#444] text-white text-[13px] px-6 py-2 rounded-sm font-medium transition-colors shadow-sm">
+                <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded-sm font-medium transition-colors shadow-sm">
                   Download
                 </button>
-                <button className="bg-[#555] hover:bg-[#444] text-white text-[13px] px-6 py-2 rounded-sm font-medium transition-colors shadow-sm">
+                <button className="bg-[#22c55e] hover:bg-[#16a34a] text-white text-[13px] px-6 py-2 rounded-sm font-medium transition-colors shadow-sm">
                   Share
                 </button>
               </div>

@@ -6,7 +6,7 @@ import Header from './Header';
 
 export default function Layout() {
   const isAuthenticated = useAuthGuard();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // If not authenticated, the useAuthGuard hook will redirect to landing page
   if (!isAuthenticated) {
@@ -16,12 +16,12 @@ export default function Layout() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-white font-sans">
       {/* Header spanning full width */}
-      <Header isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+      <Header isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
       {/* Main layout below header */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+        <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
         {/* Page content */}
         <main className="flex-1 overflow-auto bg-white p-4 lg:p-6">

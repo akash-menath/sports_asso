@@ -19,13 +19,26 @@ export default function Dashboard() {
     <div className="max-w-[1200px] mx-auto pb-10">
       <h1 className="text-[28px] font-bold text-[#444] mb-8">Dashboard</h1>
 
-      {/* Top Row: Placeholders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-[#f3f4f6] rounded-xl h-[180px] p-6">
-          <h2 className="text-[#666] font-bold text-[14px] uppercase tracking-wider">Upcoming Events</h2>
+      {/* Registration Banner */}
+      <div className="bg-[#fff1f2] rounded-[24px] inline-flex items-center px-5 py-3 mb-8 w-fit shrink-0 cursor-pointer hover:bg-[#ffe4e6] transition-colors">
+        <div className="text-[#e11d48] mr-4 flex-shrink-0">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
         </div>
-        <div className="bg-[#f3f4f6] rounded-xl h-[180px] p-6">
-          <h2 className="text-[#666] font-bold text-[14px] uppercase tracking-wider">Achievements</h2>
+        <span className="text-[#555] text-[14px] font-medium mr-6">Please fill in the details to complete the registration</span>
+        <svg className="w-5 h-5 text-[#e11d48] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+      </div>
+
+      {/* Top Row: Event Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-[#e0f8e9] rounded-xl h-[180px] p-8 flex flex-col justify-center">
+          <p className="text-[14px] text-[#444] font-bold mb-4">02 - 09 - 2025</p>
+          <h2 className="text-[#22c55e] font-bold text-[24px] mb-2 tracking-tight">26th Senior State Championship</h2>
+          <p className="text-[#6b7280] text-[13px] font-medium">Venue: Thodupuzha, Idukki</p>
+        </div>
+        <div className="bg-[#e0f2fe] rounded-xl h-[180px] p-8 flex flex-col justify-center">
+          <p className="text-[14px] text-[#444] font-bold mb-4">Men</p>
+          <h2 className="text-[#3b82f6] font-bold text-[24px] mb-2 tracking-tight">Winner Senior All India Championship</h2>
+          <p className="text-[#6b7280] text-[13px] font-medium">Venue: Maharashtra</p>
         </div>
       </div>
 
@@ -108,7 +121,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-auto p-6 pt-0 flex justify-end">
-            <button className="bg-[#4b4b4b] text-white text-[12px] font-bold px-6 py-2 rounded-lg hover:bg-[#333] transition-colors">
+            <button className="bg-[#22c55e] text-white text-[13px] font-bold px-8 py-2 rounded-lg hover:bg-[#16a34a] transition-colors">
               more
             </button>
           </div>
@@ -132,7 +145,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-auto p-6 pt-0 flex justify-end">
-            <button className="bg-[#4b4b4b] text-white text-[12px] font-bold px-6 py-2 rounded-lg hover:bg-[#333] transition-colors">
+            <button className="bg-[#22c55e] text-white text-[13px] font-bold px-8 py-2 rounded-lg hover:bg-[#16a34a] transition-colors">
               more
             </button>
           </div>
