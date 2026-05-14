@@ -14,7 +14,6 @@ const STEPS = [
 ];
 
 const CATEGORIES = ['Sub Junior', 'Junior', 'Senior', 'Masters'];
-const ACADEMIC_YEARS = ['2023-24', '2024-25', '2025-26'];
 const DISTRICTS = [
   'Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha',
   'Kottayam', 'Idukki', 'Ernakulam', 'Thrissur', 'Palakkad',
@@ -26,23 +25,43 @@ export default function CreateChampionship() {
   const [currentStep, setCurrentStep] = useState(0);
   const [activeDoc, setActiveDoc] = useState('Circular');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  // Mock editing mode
+  const [isEditMode] = useState(false);
+  const [originalStartDate] = useState('');
+
+  const getAcademicYear = () => {
+    const d = new Date();
+    const month = d.getMonth();
+    const year = d.getFullYear();
+    // If month is < 2 (Jan/Feb), academic year is prevYear-currentYear
+    // If month >= 2 (March+), academic year is currentYear-nextYear
+    const startYear = month < 2 ? year - 1 : year;
+    return `${startYear}-${(startYear + 1).toString().slice(-2)}`;
+  };
 
   // Form State
   const [formData, setFormData] = useState({
     level: 'State',
-    number: '26 th',
+    number: '26th',
+    gameName: '',
     category: '',
-    academicYear: '',
+    customCategory: '',
+    playerNumbers: '',
+    academicYear: getAcademicYear(),
     title: '',
     groundName: '',
     place: '',
     district: '',
+    routeDetails: '',
+    arrivalDetails: '',
     startDate: '',
     endDate: '',
-    regDeadline: '',
     time: '',
     observerDetails: {
       associationObserver: '',
+      requestDsc: true,
       observerName: '',
       observerDistrict: '',
       contactNumber: '',
@@ -62,22 +81,49 @@ export default function CreateChampionship() {
 
   // Auto-generate title
   useEffect(() => {
-    if (formData.number && formData.category && formData.level) {
-      const newTitle = `${formData.number} ${formData.category} ${formData.level} Championship`;
+    const displayCategory = formData.category === 'Other' ? formData.customCategory : formData.category;
+    if (formData.number && displayCategory && formData.level && formData.gameName && formData.academicYear) {
+      let levelText = formData.level;
+      if (formData.level === 'State') {
+        levelText = 'Kerala State';
+      }
+      const newTitle = `${formData.number} ${levelText} ${displayCategory} ${formData.gameName} Championship ${formData.academicYear}`;
       setFormData(prev => ({ ...prev, title: newTitle }));
     }
-  }, [formData.number, formData.category, formData.level]);
+  }, [formData.number, formData.category, formData.customCategory, formData.level, formData.gameName, formData.academicYear]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Date constraints calculation
+  const getMinStartDate = () => {
+    if (isSuperAdmin) return undefined;
+
+    const today = new Date();
+    if (isEditMode && originalStartDate) {
+      // No preponing allowed: start date must be >= originalStartDate
+      // Also required: if postponing, it must be at least 5 days from today
+      const minPostponeDate = new Date(today);
+      minPostponeDate.setDate(today.getDate() + 5);
+      const minPostponeDateStr = minPostponeDate.toISOString().split('T')[0];
+
+      return originalStartDate > minPostponeDateStr ? originalStartDate : minPostponeDateStr;
+    } else {
+      // Creating new: must be at least 15 days from today
+      const minCreateDate = new Date(today);
+      minCreateDate.setDate(today.getDate() + 15);
+      return minCreateDate.toISOString().split('T')[0];
+    }
+  };
+
   const handleObserverChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target as HTMLInputElement;
+    const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setFormData(prev => ({
       ...prev,
-      observerDetails: { ...prev.observerDetails, [name]: value }
+      observerDetails: { ...prev.observerDetails, [name]: finalValue }
     }));
   };
 
@@ -110,7 +156,7 @@ export default function CreateChampionship() {
             <CheckCircleIcon className="w-20 h-20 text-black stroke-[1.5]" />
           </div>
           <h2 className="text-[24px] font-bold text-[#444] mb-8">
-            Circular Send to Designated Emails Successfully
+            Circular {isEditMode ? 'Resent' : 'Sent'} to Designated Emails Successfully
           </h2>
           <button
             onClick={() => navigate('/dashboard/championships')}
@@ -195,25 +241,57 @@ export default function CreateChampionship() {
                     >
                       <option value="">Select Category</option>
                       {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      <option value="Other">Other</option>
                     </select>
                     <ChevronDownIcon className="w-4 h-4 text-[#888] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-2" />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 max-w-[310px]">
-                <label className="text-[13px] text-[#666] font-medium">Academic Year</label>
-                <div className="relative">
-                  <select
-                    name="academicYear"
-                    value={formData.academicYear}
+              {formData.category === 'Other' && (
+                <div className="grid grid-cols-2 gap-8 -mt-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] text-[#666] font-medium">Custom Category Name</label>
+                    <input
+                      type="text"
+                      name="customCategory"
+                      value={formData.customCategory}
+                      onChange={handleInputChange}
+                      className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium placeholder-[#bbb]"
+                      placeholder="e.g. Under 14"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] text-[#666] font-medium">Number of Players</label>
+                    <input
+                      type="number"
+                      name="playerNumbers"
+                      value={formData.playerNumbers}
+                      onChange={handleInputChange}
+                      className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium placeholder-[#bbb]"
+                      placeholder="e.g. 15"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-8">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[13px] text-[#666] font-medium">Game Name</label>
+                  <input
+                    type="text"
+                    name="gameName"
+                    value={formData.gameName}
                     onChange={handleInputChange}
-                    className="w-full appearance-none bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 pl-4 pr-10 rounded-sm focus:ring-0 cursor-pointer font-medium"
-                  >
-                    <option value="">Select Year</option>
-                    {ACADEMIC_YEARS.map(year => <option key={year} value={year}>{year}</option>)}
-                  </select>
-                  <ChevronDownIcon className="w-4 h-4 text-[#888] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-2" />
+                    placeholder="e.g. Throwball"
+                    className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium placeholder-[#bbb]"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[13px] text-[#666] font-medium">Academic Year</label>
+                  <div className="bg-[#f4f4f4] text-[#555] text-[14px] py-3.5 px-4 rounded-sm font-medium h-[48px] flex items-center">
+                    {formData.academicYear}
+                  </div>
                 </div>
               </div>
 
@@ -281,6 +359,31 @@ export default function CreateChampionship() {
                 <a href="#" className="text-[13px] text-[#666] font-medium underline underline-offset-2 decoration-[#999] hover:text-[#333] transition-colors">Pick the location on map</a>
               </div>
 
+              {formData.level === 'State' && (
+                <div className="grid grid-cols-2 gap-8 pt-2">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] text-[#666] font-medium">Route Details</label>
+                    <textarea
+                      name="routeDetails"
+                      value={formData.routeDetails}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Nearest railway station is..."
+                      className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium placeholder-[#bbb] resize-none h-24"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] text-[#666] font-medium">Arrival Details</label>
+                    <textarea
+                      name="arrivalDetails"
+                      value={formData.arrivalDetails}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Teams should arrive by 8:00 AM..."
+                      className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium placeholder-[#bbb] resize-none h-24"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="pt-8 flex justify-end gap-4 max-w-[650px]">
                 <button
                   onClick={() => setCurrentStep(0)}
@@ -301,49 +404,55 @@ export default function CreateChampionship() {
           {/* Dates Form */}
           {currentStep === 2 && (
             <div className="space-y-8 max-w-[650px]">
+              <div className="flex justify-end -mb-4">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#fcfcfc] px-3 py-1.5 rounded border border-[#eee]">
+                  <input
+                    type="checkbox"
+                    checked={isSuperAdmin}
+                    onChange={(e) => setIsSuperAdmin(e.target.checked)}
+                    className="rounded border-[#ccc] text-[#4a4a4a] focus:ring-[#4a4a4a]"
+                  />
+                  <span className="text-[12px] font-bold text-[#666]">Super Admin (Override Rules)</span>
+                </label>
+              </div>
               <div className="grid grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] text-[#666] font-medium">Start Date</label>
                   <input
                     type="date"
                     name="startDate"
+                    min={getMinStartDate()}
                     value={formData.startDate}
                     onChange={handleInputChange}
                     className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium"
                   />
+                  {formData.startDate && getMinStartDate() && formData.startDate < getMinStartDate()! && (
+                    <span className="text-[11px] text-red-500 font-medium mt-1">
+                      {isEditMode ? 'Cannot prepone, and needs 5 days gap for postponing.' : 'Must be at least 15 days from today.'}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[13px] text-[#666] font-medium">End Date</label>
                   <input
                     type="date"
                     name="endDate"
+                    min={formData.startDate || getMinStartDate()}
                     value={formData.endDate}
                     onChange={handleInputChange}
                     className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="flex flex-col gap-2">
-                  <label className="text-[13px] text-[#666] font-medium">Registration Deadline</label>
-                  <input
-                    type="date"
-                    name="regDeadline"
-                    value={formData.regDeadline}
-                    onChange={handleInputChange}
-                    className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-[13px] text-[#666] font-medium">Time</label>
-                  <input
-                    type="time"
-                    name="time"
-                    value={formData.time}
-                    onChange={handleInputChange}
-                    className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium"
-                  />
-                </div>
+              <div className="flex flex-col gap-2 max-w-[310px]">
+                <label className="text-[13px] text-[#666] font-medium">Time</label>
+                <input
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#f4f4f4] border-none text-[#555] text-[14px] py-3.5 px-4 rounded-sm focus:ring-0 font-medium"
+                />
               </div>
               <div className="pt-8 flex justify-end gap-4 max-w-[650px]">
                 <button
@@ -367,7 +476,7 @@ export default function CreateChampionship() {
             <div className="space-y-8 max-w-[650px]">
               <div className="mb-6">
                 <h2 className="font-bold text-[14px] text-[#555] mb-2">State Association Observer</h2>
-                <div className="relative">
+                <div className="relative mb-4">
                   <select
                     name="associationObserver"
                     value={formData.observerDetails.associationObserver}
@@ -380,12 +489,33 @@ export default function CreateChampionship() {
                   </select>
                   <ChevronDownIcon className="w-4 h-4 text-[#888] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-2" />
                 </div>
+
+                <h3 className="font-bold text-[13px] text-[#666] mb-2">State Observer Posting Document</h3>
+                <div className="flex justify-between items-center cursor-pointer bg-[#f4f4f4] py-3.5 px-4 rounded-sm">
+                  <span className="text-[#999]">upload</span>
+                  <svg className="w-5 h-5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                  <input type="file" className="hidden" />
+                </div>
               </div>
 
               <div className="mb-6">
-                <h2 className="font-bold text-[14px] text-[#555] mb-2">Sports Council Observer</h2>
-                <div className="flex justify-between items-center cursor-pointer bg-[#f4f4f4] py-3.5 px-4 rounded-sm">
-                  <span className="text-[#999]">upload</span>
+                <h2 className="font-bold text-[14px] text-[#555] mb-2">District Sports Council (DSC) Observer</h2>
+
+                <label className="flex items-center gap-2 mb-4 bg-[#f9f9f9] p-3 rounded border border-[#e4e4e4] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="requestDsc"
+                    checked={formData.observerDetails.requestDsc}
+                    onChange={handleObserverChange}
+                    className="rounded text-[#4b4b4b] focus:ring-[#4b4b4b] disabled:opacity-70"
+                    disabled={true}
+                  />
+                  <span className="text-[13px] text-[#555] font-medium">Request DSC Observer <span className="text-red-500">*</span> <span className="text-[11px] text-[#888] font-normal ml-1">(Mandatory at creation)</span></span>
+                </label>
+
+                <h3 className="font-bold text-[13px] text-[#666] mb-2">Posting Document (Optional at creation time)</h3>
+                <div className="flex justify-between items-center cursor-pointer bg-[#f4f4f4] py-3.5 px-4 rounded-sm opacity-80">
+                  <span className="text-[#999]">upload optional posting</span>
                   <svg className="w-5 h-5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                   <input type="file" className="hidden" />
                 </div>
@@ -619,9 +749,20 @@ export default function CreateChampionship() {
                         from {formData.startDate || 'Start Date'} to {formData.endDate || 'End Date'}.
                       </p>
                       <p>
-                        Interested participants are requested to register before {formData.regDeadline || 'Registration Deadline'}.
+                        Interested participants are requested to register before the official deadline.
                         For any queries, please contact the observer {formData.observerDetails.observerName || 'Observer Name'} at {formData.observerDetails.contactNumber || 'Contact Number'}.
                       </p>
+                      {formData.level === 'State' && activeDoc === 'Circular' && (formData.routeDetails || formData.arrivalDetails) && (
+                        <div className="mt-8 p-6 bg-[#f9f9f9] border border-[#eee] rounded-sm text-[13px]">
+                          <h5 className="font-bold text-[#555] mb-3 text-[14px]">Venue Information</h5>
+                          {formData.arrivalDetails && (
+                            <p className="mb-2"><span className="font-bold">Arrival Details:</span> {formData.arrivalDetails}</p>
+                          )}
+                          {formData.routeDetails && (
+                            <p><span className="font-bold">Route Details:</span> {formData.routeDetails}</p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -647,7 +788,7 @@ export default function CreateChampionship() {
                       onClick={handleSubmit}
                       className="bg-[#4b4b4b] hover:bg-[#333] text-white text-[14px] px-10 py-2.5 rounded font-medium transition-colors"
                     >
-                      Send
+                      {isEditMode ? 'Resend' : 'Send'}
                     </button>
                   </div>
                 </div>

@@ -24,14 +24,18 @@ export interface Championship {
     level: string;
     number: string;
     category: string;
+    gameName?: string;
+    customCategory?: string;
+    playerNumbers?: string;
     academicYear: string;
     title: string;
     groundName: string;
     place: string;
     district: string;
+    routeDetails?: string;
+    arrivalDetails?: string;
     startDate: string;
     endDate: string;
-    regDeadline: string;
     time: string;
     observerDetails: {
         associationObserver: string;
