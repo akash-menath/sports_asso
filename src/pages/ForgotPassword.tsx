@@ -32,45 +32,59 @@ export default function ForgotPassword() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4 font-sans py-12">
-        <div className="w-full max-w-[400px]">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <h1 className="text-[28px] leading-tight font-bold text-[#555] mb-2 tracking-tight">
-              Kerala Softball Association
-            </h1>
-          </div>
-
-          <div className="text-center mb-6">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#f4f4f4] mb-4">
-              <svg className="h-6 w-6 text-[#555]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      <div className="min-h-screen flex flex-col md:flex-row bg-white font-sans">
+        {/* Left Column: Confirmation Message */}
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <div className="w-full max-w-[360px]">
+            <div className="mb-6 flex items-center justify-center h-16 w-16 rounded-full bg-[#ecf7fe] text-[#3b82f6]">
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-[22px] font-bold text-[#666]">
+            <h2 className="text-[28px] font-bold text-[#1e3a8a] mb-4 text-center">
               Check Your Email
             </h2>
-            <p className="mt-2 text-[#888] text-[15px]">
-              We've sent a password reset link to<br />
-              <span className="font-medium text-[#555]">{email}</span>
+            <p className="text-[#6b7280] text-[15px] mb-8">
+              We've sent a password reset link to <span className="font-bold text-[#374151]">{email}</span>. Please check your inbox.
             </p>
-            <p className="mt-4 text-[#888] text-[13px]">
-              Click the link in the email to reset your password. The link will expire in 15 minutes.
-            </p>
-          </div>
 
-          <div className="mt-8 space-y-4">
-            <button
-              onClick={() => setIsSubmitted(false)}
-              className="w-full px-8 py-2.5 bg-[#f5f5f5] text-[#666] text-[13px] font-medium hover:bg-[#eaeaea] hover:text-[#333] focus:outline-none focus:ring-2 focus:ring-[#eaeaea] focus:ring-offset-2 transition-all duration-200 rounded-sm"
-            >
-              Send another link
-            </button>
-
-            <div className="text-center pt-2">
-              <Link to="/login" className="text-[#888] text-[13px] hover:text-[#555] transition-colors">
-                ← Back to sign in
+            <div className="space-y-4">
+              <button
+                onClick={() => setIsSubmitted(false)}
+                className="w-full py-3.5 bg-[#22c55e] text-white text-[15px] font-bold rounded-lg hover:bg-[#16a34a] focus:outline-none transition-all duration-200 shadow-sm flex items-center justify-center"
+              >
+                Send another link
+              </button>
+              <Link
+                to="/login"
+                className="block w-full py-3.5 bg-white border-[1.5px] border-[#3b82f6] text-[#4b5563] text-[15px] font-bold rounded-lg hover:bg-[#f8fbff] focus:outline-none transition-all duration-200 text-center"
+              >
+                Back to Login
               </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Branding */}
+        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white border-l border-gray-50">
+          <div className="flex items-center gap-6 max-w-[500px]">
+            <div className="shrink-0 flex items-center justify-center">
+              <img
+                src="/forgotpassword.png"
+                alt="Logo"
+                className="w-48 h-auto object-contain"
+              />
+            </div>
+            <div className="flex flex-col text-right">
+              <h1 className="text-[32px] font-bold text-[#333] leading-[1.1]">
+                KERALA
+              </h1>
+              <h1 className="text-[44px] font-[900] text-[#000] leading-[1] tracking-tight">
+                THROWBALL
+              </h1>
+              <p className="text-[20px] font-medium text-[#9ca3af] leading-[1]">
+                Association
+              </p>
             </div>
           </div>
         </div>
@@ -79,67 +93,70 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4 font-sans py-12">
-      <div className="w-full max-w-[400px]">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-[28px] leading-tight font-bold text-[#555] mb-2 tracking-tight">
-            Kerala Softball Association
-          </h1>
-          <p className="text-[#888] text-[15px]">
-            Enter your email to reset password
-          </p>
-        </div>
-
-        {/* Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-[22px] font-bold text-[#666]">
+    <div className="min-h-screen flex flex-col md:flex-row bg-white font-sans">
+      {/* Left Column: Forgot Password Form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8">
+        <div className="w-full max-w-[360px]">
+          <h2 className="text-[28px] font-bold text-[#1e3a8a] mb-8">
             Forgot Password
           </h2>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block text-[13px] text-[#888]">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-[#f4f4f4] border-none focus:ring-0 focus:outline-none px-3 py-2.5 text-[#333] transition-colors"
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-[14px] font-medium text-[#6b7280]">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-[#ecf7fe] border-none rounded-lg focus:ring-0 focus:outline-none px-4 py-3.5 text-[#333] placeholder-[#9ca3af] transition-colors"
+              />
+            </div>
+
+            <div className="flex items-center gap-4 pt-4">
+              <button
+                type="submit"
+                disabled={isLoading || !email}
+                className="flex-1 py-3.5 bg-[#22c55e] text-white text-[15px] font-bold rounded-lg hover:bg-[#16a34a] focus:outline-none transition-all duration-200 shadow-sm flex items-center justify-center"
+              >
+                {isLoading ? '...' : 'Send Link'}
+              </button>
+              <Link
+                to="/login"
+                className="flex-1 py-3.5 bg-white border-[1.5px] border-[#3b82f6] text-[#4b5563] text-[15px] font-bold rounded-lg hover:bg-[#f8fbff] focus:outline-none transition-all duration-200 text-center"
+              >
+                Cancel
+              </Link>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Right Column: Branding */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white border-l border-gray-50">
+        <div className="flex items-center gap-6 max-w-[500px]">
+          <div className="shrink-0 flex items-center justify-center">
+            <img
+              src="/forgotpassword.png"
+              alt="Logo"
+              className="w-48 h-auto object-contain"
             />
           </div>
-
-          <div className="flex items-center justify-between pt-4">
-            <Link
-              to="/login"
-              className="px-6 py-2.5 bg-[#f5f5f5] text-[#666] text-[13px] font-medium hover:bg-[#eaeaea] hover:text-[#333] focus:outline-none focus:ring-2 focus:ring-[#eaeaea] focus:ring-offset-2 transition-all duration-200 inline-block text-center rounded-sm"
-            >
-              ← Back to sign in
-            </Link>
-            <button
-              type="submit"
-              disabled={isLoading || !email}
-              className="px-8 py-2.5 bg-[#22c55e] text-white text-[13px] font-medium hover:bg-[#16a34a] focus:outline-none focus:ring-2 focus:ring-[#22c55e] focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px] rounded-sm shadow-sm"
-            >
-              {isLoading ? (
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : 'Send Link'}
-            </button>
+          <div className="flex flex-col text-right">
+            <h1 className="text-[32px] font-bold text-[#333] leading-[1.1]">
+              KERALA
+            </h1>
+            <h1 className="text-[44px] font-[900] text-[#000] leading-[1] tracking-tight">
+              THROWBALL
+            </h1>
+            <p className="text-[20px] font-medium text-[#9ca3af] leading-[1]">
+              Association
+            </p>
           </div>
-        </form>
-
-        <div className="text-center pt-8">
-          <span className="text-[#888] text-[13px]">Don't have an account? </span>
-          <Link to="/signup" className="text-[#555] text-[13px] font-medium hover:underline">
-            Sign up
-          </Link>
         </div>
       </div>
     </div>
